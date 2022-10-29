@@ -1,0 +1,28 @@
+.infradPopup {
+  font-size: larger;
+}
+
+.infradPopup button {
+  background-color: coral;
+  margin-top: 0.5em;
+  padding: 0.6em;
+  width: 100%;
+}
+
+.infradPopup button:hover {
+  font-weight: bold;
+}
+
+.infradPopup .mapboxgl-popup-content {
+  border: 3px #ff7f2a solid;
+  background-color: #fff4ee;
+}
+
+
+.infradPopup  .maplibregl-popup-tip {
+  border-top-color: #ff7f2a !important;
+}
+
+.maplibregl-marker {
+  cursor: pointer;
+}

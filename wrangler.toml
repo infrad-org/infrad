@@ -1,0 +1,26 @@
+main="./src/worker/index.js"
+name = "infrad-worker-production"
+vars = { ENVIRONMENT = "production" }
+compatibility_flags = ["streams_enable_constructors"]
+compatibility_date = "2021-09-29"
+workers_dev = true
+node_compat = true
+routes = [
+	{ pattern = "infrad.app", custom_domain = true, zone_name = "infrad.app" }
+]
+
+[site]
+bucket = "./dist/client"
+
+[dev]
+port = 3000
+
+[env.dev]
+name = "infrad-worker-dev"
+vars = { ENVIRONMENT = "dev" }
+routes = [
+	{ pattern = "dev.infrad.app", custom_domain = true, zone_name = "infrad.app" }
+]
+# The necessary secrets are:
+# - SUPABASE_API_KEY
+# Run `echo <VALUE> | wrangler secret put <NAME>` for each of these

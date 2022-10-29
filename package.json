@@ -1,0 +1,32 @@
+{
+  "scripts": {
+    "dev": "node ./dev-server",
+    "preview": "vite build && wrangler dev",
+    "deploy": "vite build && wrangler publish",
+    "deploy-dev": "vite build && wrangler publish --env dev"
+  },
+  "dependencies": {
+    "@cloudflare/kv-asset-handler": "^0.2.0",
+    "@unocss/reset": "^0.45.29",
+    "@vitejs/plugin-react": "^2.0.1",
+    "maplibre-gl": "^2.4.0",
+    "node-fetch": "^2.6.1",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "react-streaming": "^0.3.3",
+    "telefunc": "^0.1.28",
+    "vite": "^3.0.9",
+    "vite-plugin-ssr": "0.4.38"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.21",
+    "@cloudflare/workers-types": "^3.18.0",
+    "@types/react-dom": "^18.0.7",
+    "@unocss/preset-wind": "^0.45.26",
+    "express": "^4.18.1",
+    "typescript": "^4.9.0-dev.20221028",
+    "unocss": "^0.45.26",
+    "vitest": "^0.24.3",
+    "wrangler": "^2.1.10"
+  }
+}

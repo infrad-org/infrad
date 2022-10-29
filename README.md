@@ -12,7 +12,7 @@ The **frontend** is built with of React and [UnoCSS](https://github.com/unocss/u
 
 A [serverless](https://en.wikipedia.org/wiki/Serverless_computing) **backend** is used (meaning there are no specific servers that need to be managed). In particular, the main backend is deployed to [CloudFlare Workers](https://workers.cloudflare.com/), with [vite-plugin-ssr](https://vite-plugin-ssr.com/) handling SSR and [Telefunc](https://telefunc.com/) handling RPC calls. PostgreSQL is used as a database, with [PostgREST](https://postgrest.org/en/stable/) as an intermediary since arbitrary TCP connections are not possible from Cloudflare Workers (also it does connection pooling).
 
-A diagram of this architecture (if you can call it that) can be found below. The main motivation was development speed, not scalability or architectural soundness. Nevertheless, it will be interesting to learn about its limitations and strenghts. 
+A diagram of this architecture can be found below. The main motivation was development speed, not scalability or architectural soundness. Nevertheless, it will be interesting to learn about the limitations and strenghts of this architecture. 
 
 ![infrad-architecture drawio](https://user-images.githubusercontent.com/649392/198850553-8856f9e2-5ca0-4b55-b468-1c8ff1d7654d.png)
 

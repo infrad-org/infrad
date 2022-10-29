@@ -1,6 +1,6 @@
 # Infrad
 
-![](./dist/client/logo.svg)
+![](./src/public/logo.svg/logo.svg)
 
 Infrad is a web-based application that enables people wanting to increase the livability of their cities and towns. Ideas, initiatives and concerns can be interchanged and discussed. Changes and progress can be transparantly shared and tracked.
 

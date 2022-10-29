@@ -1,16 +1,14 @@
-# Infrad
-
-![](./docs/infrad-logo-with-text.svg)
+![](./docs/infrad-logo-with-text.png)
 
 Infrad is a web-based application that enables people wanting to increase the livability of their cities and towns. Ideas, initiatives and concerns can be interchanged and discussed. Changes and progress can be transparantly shared and tracked.
 
 If you are interested in what is currently being worked on, and what will be next, check out the [Trello board](https://trello.com/b/eNd1jl6u/infrad).
 
-## Developers
+## Implementation
 
 Infrad is written in TypeScript.
 
-The **frontend** consists of React and [UnoCSS](https://github.com/unocss/unocss).
+The **frontend** is built with of React and [UnoCSS](https://github.com/unocss/unocss) using [MapLibre GL JS](https://maplibre.org/) for showing maps.
 
 A [serverless](https://en.wikipedia.org/wiki/Serverless_computing) **backend** is used (meaning there are no specific servers that need to be managed). In particular, the main backend is deployed to [CloudFlare Workers](https://workers.cloudflare.com/), with [vite-plugin-ssr](https://vite-plugin-ssr.com/) handling SSR and [Telefunc](https://telefunc.com/) handling RPC calls. PostgreSQL is used as a database, with [PostgREST](https://postgrest.org/en/stable/) as an intermediary since arbitrary TCP connections are not possible from Cloudflare Workers (also it does connection pooling).
 

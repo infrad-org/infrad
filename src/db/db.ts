@@ -1,4 +1,5 @@
 import env from "../env.json";
+import { z } from "zod";
 
 export async function resetDb() {
   await fetch("http://localhost:3000/rpc/reset_db", {
@@ -43,11 +44,52 @@ export async function createPoint(long: number, lat: number) {
   });
   const result = await response.json();
   if (typeof result !== "string") {
-    console.log("result", result);
     throw new Error(
       `Unexpeced response from create_point: ${JSON.stringify(result, null, 2)}`
     );
   }
-
   return result;
+}
+
+export async function runQuery(query: string, params: Record<string, string>) {
+  const response = await rpc("custom_query", {
+    query,
+    params: JSON.stringify(params),
+  });
+  if (response.status !== 200) {
+    throw new Error(
+      `${JSON.stringify(
+        {
+          message: "Failed to execute custom_query",
+          response: {
+            status: response.status,
+            statusText: response.statusText,
+            response: await response.json(),
+          },
+        },
+        null,
+        2
+      )}`
+    );
+  }
+  return response.json();
+}
+
+export async function findPoint(id: string) {
+  const result = await runQuery(
+    "SELECT hashid, (loc::json->>'coordinates')::json loc from points WHERE hashid = $1::json->>'id'",
+    {
+      id,
+    }
+  );
+  return z
+    .array(
+      z.object({
+        hashid: z.string(),
+        loc: z.tuple([z.number(), z.number()]),
+      })
+    )
+    .max(1)
+    .transform((val) => (val.length ? val[0] : null))
+    .parse(result);
 }

@@ -30,8 +30,6 @@ VALUES (ST_MakePoint(long, lat))
 RETURNING hashid;
 $$ LANGUAGE SQL;
 
-DROP FUNCTION custom_query(TEXT, TEXT);
-
 CREATE OR REPLACE FUNCTION custom_query(query TEXT, params text) RETURNS SETOF json AS $$
     BEGIN
 	    EXECUTE format('prepare query (json) AS WITH tmp as (%s) select row_to_json(tmp.*) from tmp', query);

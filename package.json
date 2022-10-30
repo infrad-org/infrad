@@ -3,7 +3,8 @@
     "dev": "node ./dev-server",
     "preview": "vite build && wrangler dev",
     "deploy": "vite build && wrangler publish",
-    "deploy-dev": "vite build && wrangler publish --env dev"
+    "deploy-dev": "vite build && wrangler publish --env dev",
+    "test": "vitest"
   },
   "dependencies": {
     "@cloudflare/kv-asset-handler": "^0.2.0",

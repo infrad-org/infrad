@@ -35,6 +35,20 @@ function Modal({ mapState }: { mapState: MapStateManager }) {
   )
 }
 
+function useAllPoints(mapStateManager: MapStateManager) {
+  useEffect(() => {
+    (async () => {
+      const points = await onGetAllPoints();
+      points.forEach(({ id, loc }) => mapStateManager.doEffect({
+        tag: 'addMarker',
+        id,
+        lng: loc[0],
+        lat: loc[1]
+      }));
+    })();
+  }, []);
+}
+
 export function Map() {
   const map = useRef<maplibregl.Map | null>(null);
   const mapDiv = useRef<HTMLDivElement | null>(null);
@@ -45,17 +59,7 @@ export function Map() {
     }
   }));
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const points = await onGetAllPoints();
-  //     points.forEach(({ id, loc }) => mapState.current.doEffect({
-  //       tag: 'addMarker',
-  //       id,
-  //       lng: loc[0],
-  //       lat: loc[1]
-  //     }));
-  //   })();
-  // }, []);
+  useAllPoints(mapState.current);
 
   return (
     <>

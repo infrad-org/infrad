@@ -1,13 +1,13 @@
 import maplibregl from "maplibre-gl";
-import React, { useEffect, useReducer, useRef } from "react";
+import React, { useEffect, useReducer, useRef, createContext } from "react";
 import { usePageContext } from "../renderer/usePageContext";
 import { initState, MapStateManager } from "./map-state";
 
 import "./map.css";
-import { realEffectHandlers } from "./map-state/map-state-effect-handlers";
-import { MapLayoutHeader } from "../layouts/MapLayout";
 import { MaterialSymbolsClose } from "./icons";
 import { onGetAllPoints } from "./map.telefunc";
+import { MapLibre } from "./maplibre";
+import { MapLayoutHeader } from "../layouts/MapLayout";
 
 function Modal({ mapState }: { mapState: MapStateManager }) {
   return (
@@ -38,79 +38,28 @@ function Modal({ mapState }: { mapState: MapStateManager }) {
 export function Map() {
   const map = useRef<maplibregl.Map | null>(null);
   const mapDiv = useRef<HTMLDivElement | null>(null);
-  const mapState = useRef<MapStateManager>(new MapStateManager());
   const [_, forceRerender] = useReducer((count) => count + 1, 0);
+  const mapState = useRef<MapStateManager>(new MapStateManager({
+    stateChangeCb() {
+      forceRerender();
+    }
+  }));
 
-  const { loc } = usePageContext();
-
-  useEffect(() => {
-    if (!mapDiv.current) return;
-    if (map.current) return;
-
-    map.current = new maplibregl.Map({
-      attributionControl: true,
-      container: "map",
-      style:
-        "https://api.maptiler.com/maps/basic-v2/style.json?key=FTNrjsa7Nahw874tmMi7", // stylesheet location
-      center: [loc?.long || -74.5, loc?.lat || 40], // starting position [lng, lat]
-      zoom: 12, // starting zoom
-    });
-
-    mapState.current = new MapStateManager({
-      initialState: initState(),
-      effectHandlers: realEffectHandlers({
-        map: map.current,
-      }),
-      stateChangeCb: () => {
-        forceRerender();
-      },
-    });
-
-    const handleCreatePointButton = async (innerEvent: MouseEvent) => {
-      const target = innerEvent.target;
-      if (!(target instanceof Element)) return;
-      if (!target.matches("#createpointbutton")) return;
-      mapState.current.send({
-        tag: "pointCreationConfirmed",
-      });
-    };
-
-    document.addEventListener("click", handleCreatePointButton); // TODO remove
-
-    map.current.on("click", (e) => {
-      mapState.current.send({
-        tag: "latLngClicked",
-        lat: e.lngLat.lat,
-        lng: e.lngLat.lng,
-      });
-    });
-  }, [mapDiv.current]);
-
-  useEffect(() => {
-    (async () => {
-      const points = await onGetAllPoints();
-      points.forEach(({ id, loc }) => mapState.current.doEffect({
-        tag: 'addMarker',
-        id,
-        lng: loc[0],
-        lat: loc[1]
-      }));
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     const points = await onGetAllPoints();
+  //     points.forEach(({ id, loc }) => mapState.current.doEffect({
+  //       tag: 'addMarker',
+  //       id,
+  //       lng: loc[0],
+  //       lat: loc[1]
+  //     }));
+  //   })();
+  // }, []);
 
   return (
     <>
-      <div
-        id="map"
-        style={{
-          left: "0",
-          top: "0",
-          position: "absolute",
-          width: "100vw",
-          height: "100vh",
-        }}
-        ref={mapDiv}
-      ></div>
+      <MapLibre mapStateManager={mapState.current} />
       {mapState.current.state.tag === "pointOpen" && <Modal mapState={mapState.current} />}
     </>
   );

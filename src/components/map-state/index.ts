@@ -1,5 +1,4 @@
-import { EventHandlers, StateManager } from "../../lib/state-manager";
-import { DistributiveOmit } from "../../lib/ts-helpers";
+import { StateManager, EffectHandlers } from "../../lib/state-manager";
 
 export type MapState =
   | {
@@ -92,6 +91,9 @@ export class MapStateManager extends StateManager<
       openPopup: [],
     };
   }
+
+  effectsBeforeEffectHandlers: MapEffect[] = [];
+
   constructor({
     effectHandlers,
     initialState,
@@ -101,9 +103,18 @@ export class MapStateManager extends StateManager<
   > = {}) {
     super({
       initialState: initialState ? initialState : initState(),
-      effectHandlers,
+      effectHandlers: new Proxy(
+        {},
+        {
+          get: (target, p, receiver) => {
+            this.effectsBeforeEffectHandlers.push(receiver);
+            console.log(this.effectsBeforeEffectHandlers.length);
+          },
+        }
+      ),
       stateChangeCb,
     });
+
     this.eventHandlers = {
       initial: {
         latLngClicked(state, event) {
@@ -223,5 +234,12 @@ export class MapStateManager extends StateManager<
         },
       },
     };
+  }
+
+  updateEffectHandlers(
+    effectHandlers: EffectHandlers<MapState, MapEvent, MapEffect>
+  ) {
+    this.effectHandlers = effectHandlers;
+    this.effectsBeforeEffectHandlers.forEach((effect) => this.doEffect(effect));
   }
 }

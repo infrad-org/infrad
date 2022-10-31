@@ -1,5 +1,6 @@
 import maplibregl from "maplibre-gl";
-import { EffectHandlers, MapEffect, MapState, MapEvent } from ".";
+import { MapEffect, MapState, MapEvent } from ".";
+import { EffectHandlers } from "../../lib/state-manager";
 import { createPoint } from "../../pages/point.telefunc";
 
 export function realEffectHandlers({

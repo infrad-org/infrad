@@ -6,7 +6,7 @@ import {
   MapEvent,
   MapStateManager,
 } from ".";
-import { DistributiveOmit } from "../../ts-helpers";
+import { DistributiveOmit } from "../../lib/ts-helpers";
 
 type MapEffect = DistributiveOmit<MapEffectWithR, "result">;
 

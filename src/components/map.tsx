@@ -1,10 +1,10 @@
 import maplibregl from "maplibre-gl";
 import React, { useEffect, useReducer, useRef } from "react";
 import { usePageContext } from "../renderer/usePageContext";
-import { initState, MapStateManager, StateManager } from "./state";
+import { initState, MapStateManager } from "./map-state";
 
 import "./map.css";
-import { realEffectHandlers } from "./state/real-effect-handlers";
+import { realEffectHandlers } from "./map-state/map-state-effect-handlers";
 import { MapLayoutHeader } from "../layouts/MapLayout";
 import { MaterialSymbolsClose } from "./icons";
 

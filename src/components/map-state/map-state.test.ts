@@ -47,8 +47,13 @@ test("handleEvent latLngClicked", () => {
 });
 
 test("creatingPoint + latLngClicked", () => {
-  const sm = new MapStateManager();
-  sm.send(latLngClicked);
+  const sm = new MapStateManager({
+    initialState: {
+      lat: 1,
+      lng: 1,
+      tag: "creatingPoint",
+    },
+  });
   const [newState, effects] = sm.try(latLngClicked);
   assert(newState.tag === "creatingPoint");
   const effect1: MapEffect = {
@@ -67,6 +72,12 @@ test("creatingPoint + pointCreationConfirmed -> waitingForPointCreated", () => {
   const sm = new MapStateManager();
 
   sm.send(latLngClicked);
+  const { lat, lng } = { lat: 1, lng: 1 };
+  sm.send({
+    tag: "latLngClicked",
+    lat,
+    lng,
+  });
   const [newState, effects] = sm.try({
     tag: "pointCreationConfirmed",
   });
@@ -74,8 +85,8 @@ test("creatingPoint + pointCreationConfirmed -> waitingForPointCreated", () => {
   const effect1: MapEffect = { tag: "closePopup" };
   const effect2: MapEffect = {
     tag: "createPoint",
-    lat: latLngClicked.lat,
-    lng: latLngClicked.lng,
+    lat: lat,
+    lng: lng,
   };
   expect(effects).to.have.length(2);
   expect(effects).to.deep.include(effect1);

@@ -150,7 +150,11 @@ export class MapStateManager extends StateManager<
       creatingPoint: {
         latLngClicked(state, { lat, lng }) {
           return [
-            state,
+            {
+              ...state,
+              lat,
+              lng,
+            },
             [
               {
                 tag: "closePopup",

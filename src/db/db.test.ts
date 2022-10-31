@@ -1,5 +1,5 @@
-import { afterEach, assert, test } from "vitest";
-import { resetDb, createPoint, findPoint } from "./db";
+import { afterEach, assert, expect, test } from "vitest";
+import { resetDb, createPoint, findPoint, getAllPoints } from "./db";
 
 afterEach(async () => {
   resetDb();
@@ -26,4 +26,10 @@ test("fetch a point", async () => {
   assert(point.id === id);
   assert(point.loc[0] === lng);
   assert(point.loc[1] === lat);
+});
+
+test("getAllPoints()", async () => {
+  await createPoint(0, 0);
+  const allPoints = await getAllPoints();
+  expect(allPoints).to.have.length.greaterThanOrEqual(1);
 });

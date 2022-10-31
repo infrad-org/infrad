@@ -110,7 +110,7 @@ export abstract class StateManager<
   }
 
   doEffect(effect: DistributiveOmit<Effect, "result">) {
-    console.log("Handling effect: ", effect);
+    // console.log("Handling effect: ", effect);
     const effectResult = this.effectHandlers[effect.tag]?.(effect as any, {
       effectResultHistory: this.effectResultHistory,
       send: this.send.bind(this),

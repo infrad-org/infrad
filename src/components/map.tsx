@@ -7,6 +7,7 @@ import "./map.css";
 import { realEffectHandlers } from "./map-state/map-state-effect-handlers";
 import { MapLayoutHeader } from "../layouts/MapLayout";
 import { MaterialSymbolsClose } from "./icons";
+import { onGetAllPoints } from "./map.telefunc";
 
 function Modal({ mapState }: { mapState: MapStateManager }) {
   return (
@@ -84,6 +85,18 @@ export function Map() {
       });
     });
   }, [mapDiv.current]);
+
+  useEffect(() => {
+    (async () => {
+      const points = await onGetAllPoints();
+      points.forEach(({ id, loc }) => mapState.current.doEffect({
+        tag: 'addMarker',
+        id,
+        lng: loc[0],
+        lat: loc[1]
+      }));
+    })();
+  }, []);
 
   return (
     <>

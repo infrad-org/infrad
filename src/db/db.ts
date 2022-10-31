@@ -51,10 +51,13 @@ export async function createPoint(long: number, lat: number) {
   return result;
 }
 
-export async function runQuery(query: string, params: Record<string, string>) {
+export async function runQuery(
+  query: string,
+  params: Record<string, string> | null = null
+) {
   const response = await rpc("custom_query", {
     query,
-    params: JSON.stringify(params),
+    ...(params ? { params: JSON.stringify(params) } : {}),
   });
   if (response.status !== 200) {
     throw new Error(
@@ -91,5 +94,19 @@ export async function findPoint(id: string) {
     )
     .max(1)
     .transform((val) => (val.length ? val[0] : null))
+    .parse(result);
+}
+
+export async function getAllPoints() {
+  const result = await runQuery(
+    "SELECT hashid as id, (loc::json->>'coordinates')::json loc from points"
+  );
+  return z
+    .array(
+      z.object({
+        id: z.string(),
+        loc: z.tuple([z.number(), z.number()]),
+      })
+    )
     .parse(result);
 }

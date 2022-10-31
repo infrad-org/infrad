@@ -1,5 +1,7 @@
 import React from "react";
 import Spinner from "../components/spinner/Spinner";
+import { Map } from '../components/map';
+import { MapStateManagerProvider } from "../components/map-state/context";
 
 export function MapLayoutHeader() {
   return (
@@ -21,7 +23,10 @@ export function MapLayout({ children }: { children: React.ReactNode }) {
           <Spinner />
         </div>
       </div>
-      {children}
+      <MapStateManagerProvider>
+        <Map />
+        {children}
+      </MapStateManagerProvider>
     </>
   );
 }

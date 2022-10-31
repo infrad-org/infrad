@@ -7,7 +7,7 @@ export { MapLayout as Layout };
 export function Page() {
   return (
     <>
-      <Map />
+
     </>
   );
 }

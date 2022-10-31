@@ -1,13 +1,12 @@
-import maplibregl from "maplibre-gl";
-import React, { useEffect, useReducer, useRef, createContext } from "react";
-import { usePageContext } from "../renderer/usePageContext";
-import { initState, MapStateManager } from "./map-state";
+import React, { useEffect } from "react";
+import { MapStateManager } from "./map-state";
 
 import "./map.css";
 import { MaterialSymbolsClose } from "./icons";
 import { onGetAllPoints } from "./map.telefunc";
 import { MapLibre } from "./maplibre";
 import { MapLayoutHeader } from "../layouts/MapLayout";
+import { useMapStateManager } from "./map-state/context";
 
 function Modal({ mapState }: { mapState: MapStateManager }) {
   return (
@@ -49,22 +48,16 @@ function useAllPoints(mapStateManager: MapStateManager) {
   }, []);
 }
 
-export function Map() {
-  const map = useRef<maplibregl.Map | null>(null);
-  const mapDiv = useRef<HTMLDivElement | null>(null);
-  const [_, forceRerender] = useReducer((count) => count + 1, 0);
-  const mapState = useRef<MapStateManager>(new MapStateManager({
-    stateChangeCb() {
-      forceRerender();
-    }
-  }));
 
-  useAllPoints(mapState.current);
+export function Map() {
+  const mapStateManager = useMapStateManager();
+  useAllPoints(mapStateManager);
 
   return (
     <>
-      <MapLibre mapStateManager={mapState.current} />
-      {mapState.current.state.tag === "pointOpen" && <Modal mapState={mapState.current} />}
+      <div className="bg-pink z-2 absolute">hello {mapStateManager.state.tag}</div>
+      <MapLibre mapStateManager={mapStateManager} />
+      {mapStateManager.state.tag === "pointOpen" && <Modal mapState={mapStateManager} />}
     </>
   );
 }

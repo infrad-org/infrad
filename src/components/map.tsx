@@ -1,7 +1,7 @@
 import maplibregl from "maplibre-gl";
 import React, { useEffect, useReducer, useRef } from "react";
 import { usePageContext } from "../renderer/usePageContext";
-import { MapStateManager, StateManager } from "./state";
+import { initState, MapStateManager, StateManager } from "./state";
 
 import "./map.css";
 import { realEffectHandlers } from "./state/real-effect-handlers";
@@ -56,6 +56,7 @@ export function Map() {
     });
 
     mapState.current = new StateManager({
+      initialState: initState(),
       effectHandlers: realEffectHandlers({
         map: map.current,
       }),

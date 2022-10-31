@@ -1,10 +1,10 @@
 import { expect, test, assert } from "vitest";
 import {
   initState,
-  State,
+  MapState,
   Effect,
   StateManager,
-  Event,
+  MapEvent,
   MapStateManager,
 } from ".";
 
@@ -14,16 +14,16 @@ test("initial state", () => {
   });
 });
 
-const latLngClicked: Event = {
+const latLngClicked: MapEvent = {
   tag: "latLngClicked",
   lat: 0,
   lng: 0,
 };
 
 test("handleEvent latLngClicked", () => {
-  const sm = new StateManager();
+  const sm = new MapStateManager();
   const [newState, effects] = sm.try(latLngClicked);
-  const expectedState: State = {
+  const expectedState: MapState = {
     tag: "creatingPoint",
     lat: latLngClicked.lat,
     lng: latLngClicked.lng,
@@ -106,7 +106,7 @@ test("waitingForPointCreated + pointCreated = pointOpen", () => {
 });
 
 test("pointOpen + close = initial", () => {
-  const sm = new StateManager({
+  const sm = new MapStateManager({
     initialState: {
       tag: "pointOpen",
     },
@@ -114,7 +114,7 @@ test("pointOpen + close = initial", () => {
   const [newState, effects] = sm.try({
     tag: "close",
   });
-  const expectedState: State = {
+  const expectedState: MapState = {
     tag: "initial",
   };
   expect(newState).to.deep.equal(expectedState);
@@ -133,7 +133,7 @@ test("initial + openPoint = pointOpen", () => {
     tag: "openPoint",
     id,
   });
-  const expectedState: State = {
+  const expectedState: MapState = {
     tag: "pointOpen",
   };
   expect(newState).to.deep.equal(expectedState);

@@ -1,6 +1,6 @@
 import { DistributiveOmit } from "../../ts-helpers";
 
-export type State =
+export type MapState =
   | {
       tag: "initial";
     }
@@ -16,7 +16,7 @@ export type State =
       tag: "pointOpen";
     };
 
-export type Event =
+export type MapEvent =
   | {
       tag: "latLngClicked";
       lng: number;
@@ -82,7 +82,7 @@ export type EffectsWithoutResult = Exclude<EffectR, EffectsWithResult>;
 
 export type Effect = DistributiveOmit<EffectR, "result">;
 
-export function initState(): State {
+export function initState(): MapState {
   return {
     tag: "initial",
   };
@@ -92,7 +92,12 @@ type EffectResultHistory = {
   [eff in EffectsWithResult["tag"]]: EffectsWithResult["result"][];
 };
 
-type EventHandlers = {
+type EventHandlers<
+  State extends { tag: StateTags },
+  Event extends { tag: EventTags },
+  StateTags extends string = State["tag"],
+  EventTags extends string = Event["tag"]
+> = {
   [stateTag in State["tag"]]?: {
     [eventTag in Event["tag"]]?: (
       s: State & { tag: stateTag },
@@ -119,11 +124,12 @@ export type EffectHandlers = {
   ) => EffectsWithResult["result"];
 };
 
-const openPoint: NonNullable<EventHandlers["initial"]>["openPoint"] &
-  NonNullable<EventHandlers["creatingPoint"]>["openPoint"] = (
-  _state,
-  event
-) => {
+const openPoint: NonNullable<
+  EventHandlers<MapState, MapEvent>["initial"]
+>["openPoint"] &
+  NonNullable<
+    EventHandlers<MapState, MapEvent>["creatingPoint"]
+  >["openPoint"] = (_state, event) => {
   return [
     {
       tag: "pointOpen",
@@ -137,100 +143,14 @@ const openPoint: NonNullable<EventHandlers["initial"]>["openPoint"] &
   ];
 };
 
-export class StateManager<State extends { tag: string }> {
+export class StateManager<
+  State extends { tag: StateTags },
+  Event extends { tag: EventTags },
+  StateTags extends string = State["tag"],
+  EventTags extends string = Event["tag"]
+> {
   state: State;
-  eventHandlers: EventHandlers = {
-    initial: {
-      latLngClicked(state, event) {
-        return [
-          {
-            tag: "creatingPoint",
-            lat: event.lat,
-            lng: event.lng,
-          },
-          [
-            {
-              tag: "openPopup",
-              lat: event.lat,
-              lng: event.lng,
-            },
-          ],
-        ];
-      },
-      openPoint,
-    },
-    creatingPoint: {
-      latLngClicked(state, { lat, lng }) {
-        return [
-          state,
-          [
-            {
-              tag: "closePopup",
-            },
-            {
-              tag: "openPopup",
-              lat,
-              lng,
-            },
-          ],
-        ];
-      },
-      pointCreationConfirmed({ lat, lng }) {
-        return [
-          {
-            tag: "waitingForPointCreated",
-          },
-          [
-            {
-              tag: "createPoint",
-              lat,
-              lng,
-            },
-            {
-              tag: "closePopup",
-            },
-          ],
-        ];
-      },
-      openPoint,
-    },
-    waitingForPointCreated: {
-      pointCreated(_state, { lat, lng, id }) {
-        return [
-          {
-            tag: "pointOpen",
-          },
-          [
-            {
-              tag: "urlChange",
-              path: `/point/${id}`,
-            },
-            {
-              tag: "addMarker",
-              lat,
-              lng,
-              id,
-            },
-          ],
-        ];
-      },
-    },
-    pointOpen: {
-      close() {
-        return [
-          {
-            tag: "initial",
-          },
-          [
-            {
-              tag: "urlChange",
-              path: "/create",
-            },
-          ],
-        ];
-      },
-    },
-  };
+  eventHandlers: EventHandlers<State, Event> = {};
   effectHandlers: EffectHandlers = {};
   effectResultHistory: EffectResultHistory = {
     openPopup: [],
@@ -254,7 +174,7 @@ export class StateManager<State extends { tag: string }> {
   /**
    * Returns new state and effects that would occur upon sending an event.
    */
-  try(event: Event) {
+  try(event: Event): [State, Effect[]] {
     return (
       this.eventHandlers[this.state.tag]?.[event.tag]?.(
         this.state as any,
@@ -291,16 +211,110 @@ export class StateManager<State extends { tag: string }> {
   }
 }
 
-export class MapStateManager extends StateManager<State> {
+export class MapStateManager extends StateManager<MapState, MapEvent> {
   constructor({
     effectHandlers,
     initialState,
     stateChangeCb,
-  }: Partial<ConstructorParameters<typeof StateManager<State>>[0]> = {}) {
+  }: Partial<
+    ConstructorParameters<typeof StateManager<MapState, MapEvent>>[0]
+  > = {}) {
     super({
       initialState: initialState ? initialState : initState(),
       effectHandlers,
       stateChangeCb,
     });
+    this.eventHandlers = {
+      initial: {
+        latLngClicked(state, event) {
+          return [
+            {
+              tag: "creatingPoint",
+              lat: event.lat,
+              lng: event.lng,
+            },
+            [
+              {
+                tag: "openPopup",
+                lat: event.lat,
+                lng: event.lng,
+              },
+            ],
+          ];
+        },
+        openPoint,
+      },
+      creatingPoint: {
+        latLngClicked(state, { lat, lng }) {
+          return [
+            state,
+            [
+              {
+                tag: "closePopup",
+              },
+              {
+                tag: "openPopup",
+                lat,
+                lng,
+              },
+            ],
+          ];
+        },
+        pointCreationConfirmed({ lat, lng }) {
+          return [
+            {
+              tag: "waitingForPointCreated",
+            },
+            [
+              {
+                tag: "createPoint",
+                lat,
+                lng,
+              },
+              {
+                tag: "closePopup",
+              },
+            ],
+          ];
+        },
+        openPoint,
+      },
+      waitingForPointCreated: {
+        pointCreated(_state, { lat, lng, id }) {
+          return [
+            {
+              tag: "pointOpen",
+            },
+            [
+              {
+                tag: "urlChange",
+                path: `/point/${id}`,
+              },
+              {
+                tag: "addMarker",
+                lat,
+                lng,
+                id,
+              },
+            ],
+          ];
+        },
+      },
+      pointOpen: {
+        close() {
+          return [
+            {
+              tag: "initial",
+            },
+            [
+              {
+                tag: "urlChange",
+                path: "/create",
+              },
+            ],
+          ];
+        },
+      },
+    };
   }
 }

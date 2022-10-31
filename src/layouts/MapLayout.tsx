@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useReducer } from "react";
 import Spinner from "../components/spinner/Spinner";
 import { Map } from '../components/map';
 import { MapStateManagerProvider } from "../components/map-state/context";
@@ -15,6 +15,8 @@ export function MapLayoutHeader() {
 }
 
 export function MapLayout({ children }: { children: React.ReactNode }) {
+  const [_, forceRerender] = useReducer((count) => count + 1, 0);
+
   return (
     <>
       <div className="absolute h-full w-full flex flex-col">
@@ -23,7 +25,7 @@ export function MapLayout({ children }: { children: React.ReactNode }) {
           <Spinner />
         </div>
       </div>
-      <MapStateManagerProvider>
+      <MapStateManagerProvider forceRerender={forceRerender}>
         <Map />
         {children}
       </MapStateManagerProvider>

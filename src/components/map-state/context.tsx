@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useReducer, useRef } from 'react';
+import React, { createContext, ReactNode, useContext, useRef } from 'react';
 import { MapStateManager } from '.';
 
 const MapStateManagerContext = createContext<MapStateManager | null>(null);
@@ -12,8 +12,7 @@ export function useMapStateManager() {
   return mapStateManager;
 }
 
-export function MapStateManagerProvider({ children }: { children: ReactNode }) {
-  const [count, forceRerender] = useReducer((count) => count + 1, 0);
+export function MapStateManagerProvider({ children, forceRerender }: { children: ReactNode, forceRerender: () => void }) {
   const mapStateManager = useRef<MapStateManager>(new MapStateManager({
     stateChangeCb() {
       forceRerender();

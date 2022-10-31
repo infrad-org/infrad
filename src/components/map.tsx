@@ -55,7 +55,6 @@ export function Map() {
 
   return (
     <>
-      <div className="bg-pink z-2 absolute">hello {mapStateManager.state.tag}</div>
       <MapLibre mapStateManager={mapStateManager} />
       {mapStateManager.state.tag === "pointOpen" && <Modal mapState={mapStateManager} />}
     </>

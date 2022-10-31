@@ -1,12 +1,12 @@
 import maplibregl from "maplibre-gl";
-import { EffectHandlers } from ".";
+import { EffectHandlers, MapEffect, MapState, MapEvent } from ".";
 import { createPoint } from "../../pages/point.telefunc";
 
 export function realEffectHandlers({
   map,
 }: {
   map: maplibregl.Map;
-}): EffectHandlers {
+}): EffectHandlers<MapState, MapEvent, MapEffect> {
   return {
     openPopup({ lat, lng }) {
       const html = `<p>Have something to say about this place?</p>

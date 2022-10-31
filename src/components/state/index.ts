@@ -67,10 +67,11 @@ export type MapEffect =
       lat: number;
     };
 
-export type EffectsWithResult = Extract<MapEffect, { result: any }>;
-export type EffectsWithoutResult = Exclude<MapEffect, EffectsWithResult>;
-
-export type Effect = DistributiveOmit<MapEffect, "result">;
+export type EffectsWithResult<Effect> = Extract<Effect, { result: any }>;
+export type EffectsWithoutResult<Effect> = Exclude<
+  Effect,
+  EffectsWithResult<Effect>
+>;
 
 export function initState(): MapState {
   return {
@@ -78,15 +79,20 @@ export function initState(): MapState {
   };
 }
 
-type EffectResultHistory = {
-  [eff in EffectsWithResult["tag"]]: EffectsWithResult["result"][];
+type EffectResultHistory<
+  Effect extends { tag: EffectTag },
+  EffectTag extends string = Effect["tag"]
+> = {
+  [eff in EffectsWithResult<Effect>["tag"]]: EffectsWithResult<Effect>["result"][];
 };
 
 type EventHandlers<
   State extends { tag: StateTags },
   Event extends { tag: EventTags },
+  Effect extends { tag: EffectTags },
   StateTags extends string = State["tag"],
-  EventTags extends string = Event["tag"]
+  EventTags extends string = Event["tag"],
+  EffectTags extends string = Effect["tag"]
 > = {
   [stateTag in State["tag"]]?: {
     [eventTag in Event["tag"]]?: (
@@ -96,29 +102,52 @@ type EventHandlers<
   };
 };
 
-type EffectHandlerArgs<effectTag extends string> = [
+type EffectHandlerArgs<
+  State extends { tag: StateTags },
+  Event extends { tag: EventTags },
+  Effect extends { tag: EffectTags },
+  effectTag extends Effect["tag"],
+  StateTags extends string = State["tag"],
+  EventTags extends string = Event["tag"],
+  EffectTags extends string = Effect["tag"]
+> = [
   effect: Effect & { tag: effectTag },
   config: {
-    effectResultHistory: EffectResultHistory;
-    send: MapStateManager["send"];
+    effectResultHistory: EffectResultHistory<Effect>;
+    send: StateManager<State, Event, Effect>["send"];
   }
 ];
 
-export type EffectHandlers = {
-  [effectTag in EffectsWithoutResult["tag"]]?: (
-    ...args: EffectHandlerArgs<effectTag>
+export type EffectHandlers<
+  State extends { tag: StateTags },
+  Event extends { tag: EventTags },
+  Effect extends { tag: EffectTags },
+  StateTags extends string = State["tag"],
+  EventTags extends string = Event["tag"],
+  EffectTags extends string = Effect["tag"]
+> = {
+  [effectTag in EffectsWithoutResult<Effect>["tag"]]?: (
+    ...args: EffectHandlerArgs<State, Event, Effect, effectTag>
   ) => void;
 } & {
-  [effectTag in EffectsWithResult["tag"]]?: (
-    ...args: EffectHandlerArgs<effectTag>
-  ) => EffectsWithResult["result"];
+  [effectTag in EffectsWithResult<Effect>["tag"]]?: (
+    ...args: EffectHandlerArgs<State, Event, Effect, effectTag>
+  ) => EffectsWithResult<Effect>["result"];
 };
 
 const openPoint: NonNullable<
-  EventHandlers<MapState, MapEvent>["initial"]
+  EventHandlers<
+    MapState,
+    MapEvent,
+    DistributiveOmit<MapEffect, "result">
+  >["initial"]
 >["openPoint"] &
   NonNullable<
-    EventHandlers<MapState, MapEvent>["creatingPoint"]
+    EventHandlers<
+      MapState,
+      MapEvent,
+      DistributiveOmit<MapEffect, "result">
+    >["creatingPoint"]
   >["openPoint"] = (_state, event) => {
   return [
     {
@@ -133,26 +162,33 @@ const openPoint: NonNullable<
   ];
 };
 
-export class StateManager<
+export abstract class StateManager<
   State extends { tag: StateTags },
   Event extends { tag: EventTags },
+  Effect extends { tag: EffectTags },
   StateTags extends string = State["tag"],
-  EventTags extends string = Event["tag"]
+  EventTags extends string = Event["tag"],
+  EffectTags extends string = Effect["tag"]
 > {
   state: State;
-  eventHandlers: EventHandlers<State, Event> = {};
-  effectHandlers: EffectHandlers = {};
-  effectResultHistory: EffectResultHistory = {
-    openPopup: [],
-  };
+  eventHandlers: EventHandlers<
+    State,
+    Event,
+    DistributiveOmit<Effect, "result">
+  > = {};
+  effectHandlers: EffectHandlers<State, Event, Effect> = {};
+  effectResultHistory: EffectResultHistory<Effect> =
+    this.initEffectResultHistory();
   stateChangeCb: () => void = () => {};
+
+  abstract initEffectResultHistory(): EffectResultHistory<Effect>;
 
   constructor({
     effectHandlers,
     stateChangeCb,
     initialState,
   }: {
-    effectHandlers?: EffectHandlers;
+    effectHandlers?: EffectHandlers<State, Event, Effect>;
     stateChangeCb?: () => void;
     initialState: State;
   }) {
@@ -164,7 +200,7 @@ export class StateManager<
   /**
    * Returns new state and effects that would occur upon sending an event.
    */
-  try(event: Event): [State, Effect[]] {
+  try(event: Event): [State, DistributiveOmit<Effect, "result">[]] {
     return (
       this.eventHandlers[this.state.tag]?.[event.tag]?.(
         this.state as any,
@@ -173,7 +209,7 @@ export class StateManager<
     );
   }
 
-  doEffect(effect: Effect) {
+  doEffect(effect: DistributiveOmit<Effect, "result">) {
     console.log("Handling effect: ", effect);
     const effectResult = this.effectHandlers[effect.tag]?.(effect as any, {
       effectResultHistory: this.effectResultHistory,
@@ -196,13 +232,22 @@ export class StateManager<
   }
 }
 
-export class MapStateManager extends StateManager<MapState, MapEvent> {
+export class MapStateManager extends StateManager<
+  MapState,
+  MapEvent,
+  MapEffect
+> {
+  initEffectResultHistory() {
+    return {
+      openPopup: [],
+    };
+  }
   constructor({
     effectHandlers,
     initialState,
     stateChangeCb,
   }: Partial<
-    ConstructorParameters<typeof StateManager<MapState, MapEvent>>[0]
+    ConstructorParameters<typeof StateManager<MapState, MapEvent, MapEffect>>[0]
   > = {}) {
     super({
       initialState: initialState ? initialState : initState(),

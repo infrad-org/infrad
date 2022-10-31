@@ -55,7 +55,7 @@ export function Map() {
       zoom: 12, // starting zoom
     });
 
-    mapState.current = new StateManager({
+    mapState.current = new MapStateManager({
       initialState: initState(),
       effectHandlers: realEffectHandlers({
         map: map.current,

@@ -2,11 +2,13 @@ import { expect, test, assert } from "vitest";
 import {
   initState,
   MapState,
-  Effect,
-  StateManager,
+  MapEffect as MapEffectWithR,
   MapEvent,
   MapStateManager,
 } from ".";
+import { DistributiveOmit } from "../../ts-helpers";
+
+type MapEffect = DistributiveOmit<MapEffectWithR, "result">;
 
 test("initial state", () => {
   expect(initState()).to.deep.equal({
@@ -29,7 +31,7 @@ test("handleEvent latLngClicked", () => {
     lng: latLngClicked.lng,
   };
   expect(newState).to.deep.equal(expectedState);
-  const effect1: Effect = {
+  const effect1: MapEffect = {
     tag: "openPopup",
     lat: latLngClicked.lat,
     lng: latLngClicked.lng,
@@ -42,10 +44,10 @@ test("creatingPoint + latLngClicked", () => {
   sm.send(latLngClicked);
   const [newState, effects] = sm.try(latLngClicked);
   assert(newState.tag === "creatingPoint");
-  const effect1: Effect = {
+  const effect1: MapEffect = {
     tag: "closePopup",
   };
-  const effect2: Effect = {
+  const effect2: MapEffect = {
     tag: "openPopup",
     lat: latLngClicked.lat,
     lng: latLngClicked.lng,
@@ -62,8 +64,8 @@ test("creatingPoint + pointCreationConfirmed -> waitingForPointCreated", () => {
     tag: "pointCreationConfirmed",
   });
   assert(newState.tag === "waitingForPointCreated");
-  const effect1: Effect = { tag: "closePopup" };
-  const effect2: Effect = {
+  const effect1: MapEffect = { tag: "closePopup" };
+  const effect2: MapEffect = {
     tag: "createPoint",
     lat: latLngClicked.lat,
     lng: latLngClicked.lng,
@@ -90,11 +92,11 @@ test("waitingForPointCreated + pointCreated = pointOpen", () => {
     lng: latLngClicked.lng,
   });
   assert(newState.tag === "pointOpen");
-  const effect1: Effect = {
+  const effect1: MapEffect = {
     tag: "urlChange",
     path: `/point/${id}`,
   };
-  const effect2: Effect = {
+  const effect2: MapEffect = {
     tag: "addMarker",
     lat,
     lng,
@@ -118,7 +120,7 @@ test("pointOpen + close = initial", () => {
     tag: "initial",
   };
   expect(newState).to.deep.equal(expectedState);
-  const effect1: Effect = {
+  const effect1: MapEffect = {
     tag: "urlChange",
     path: "/create",
   };
@@ -137,7 +139,7 @@ test("initial + openPoint = pointOpen", () => {
     tag: "pointOpen",
   };
   expect(newState).to.deep.equal(expectedState);
-  const effect1: Effect = {
+  const effect1: MapEffect = {
     tag: "urlChange",
     path: `/point/${id}`,
   };

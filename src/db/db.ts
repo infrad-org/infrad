@@ -53,11 +53,11 @@ export async function createPoint(long: number, lat: number) {
 
 export async function runQuery(
   query: string,
-  params: Record<string, string> | null = null
+  params: Record<string, string> = {}
 ) {
   const response = await rpc("custom_query", {
     query,
-    ...(params ? { params: JSON.stringify(params) } : {}),
+    params: JSON.stringify(params),
   });
   if (response.status !== 200) {
     throw new Error(

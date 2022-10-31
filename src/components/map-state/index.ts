@@ -68,38 +68,19 @@ export type MapEffect =
       lat: number;
     };
 
-export function initState(): MapState {
+export function initState(path?: string): MapState {
+  if (path) {
+    const splitPath = path.split("/");
+    if (splitPath.length == 2 && splitPath[0] === "point") {
+      return {
+        tag: "pointOpen",
+      };
+    }
+  }
   return {
     tag: "initial",
   };
 }
-
-const openPoint: NonNullable<
-  EventHandlers<
-    MapState,
-    MapEvent,
-    DistributiveOmit<MapEffect, "result">
-  >["initial"]
->["openPoint"] &
-  NonNullable<
-    EventHandlers<
-      MapState,
-      MapEvent,
-      DistributiveOmit<MapEffect, "result">
-    >["creatingPoint"]
-  >["openPoint"] = (_state, event) => {
-  return [
-    {
-      tag: "pointOpen",
-    },
-    [
-      {
-        tag: "urlChange",
-        path: `/point/${event.id}`,
-      },
-    ],
-  ];
-};
 
 export class MapStateManager extends StateManager<
   MapState,
@@ -141,7 +122,19 @@ export class MapStateManager extends StateManager<
             ],
           ];
         },
-        openPoint,
+        openPoint(_state, event) {
+          return [
+            {
+              tag: "pointOpen",
+            },
+            [
+              {
+                tag: "urlChange",
+                path: `/point/${event.id}`,
+              },
+            ],
+          ];
+        },
       },
       creatingPoint: {
         latLngClicked(state, { lat, lng }) {
@@ -176,7 +169,22 @@ export class MapStateManager extends StateManager<
             ],
           ];
         },
-        openPoint,
+        openPoint(_state, event) {
+          return [
+            {
+              tag: "pointOpen",
+            },
+            [
+              {
+                tag: "urlChange",
+                path: `/point/${event.id}`,
+              },
+              {
+                tag: "closePopup",
+              },
+            ],
+          ];
+        },
       },
       waitingForPointCreated: {
         pointCreated(_state, { lat, lng, id }) {

@@ -16,6 +16,13 @@ test("initial state", () => {
   });
 });
 
+test("initial state /point/BkaLrxXvYx", () => {
+  const expectedState: MapState = {
+    tag: "pointOpen",
+  };
+  expect(initState("point/BkaLrxXvYx")).to.deep.equal(expectedState);
+});
+
 const latLngClicked: MapEvent = {
   tag: "latLngClicked",
   lat: 0,
@@ -145,4 +152,33 @@ test("initial + openPoint = pointOpen", () => {
   };
   expect(effects).to.have.length(1);
   expect(effects).to.deep.include(effect1);
+});
+
+test("creatingPoint + openPoint", () => {
+  const sm = new MapStateManager({
+    initialState: {
+      tag: "creatingPoint",
+      lat: 0,
+      lng: 0,
+    },
+  });
+  const id = "some-id";
+  const [newState, effects] = sm.try({
+    tag: "openPoint",
+    id,
+  });
+  const expectedState: MapState = {
+    tag: "pointOpen",
+  };
+  expect(newState).to.deep.equal(expectedState);
+  const effect1: MapEffect = {
+    tag: "urlChange",
+    path: `/point/${id}`,
+  };
+  const effect2: MapEffect = {
+    tag: "closePopup",
+  };
+  expect(effects).to.have.length(2);
+  expect(effects).to.deep.include(effect1);
+  expect(effects).to.deep.include(effect2);
 });

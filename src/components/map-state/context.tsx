@@ -1,5 +1,7 @@
 import React, { createContext, ReactNode, useContext, useRef } from 'react';
 import { MapStateManager } from '.';
+import { usePageContext } from '../../renderer/usePageContext';
+import { initState } from './init';
 
 const MapStateManagerContext = createContext<MapStateManager | null>(null);
 
@@ -13,7 +15,10 @@ export function useMapStateManager() {
 }
 
 export function MapStateManagerProvider({ children, forceRerender }: { children: ReactNode, forceRerender: () => void }) {
+  const { urlOriginal } = usePageContext();
+
   const mapStateManager = useRef<MapStateManager>(new MapStateManager({
+    initialState: initState(urlOriginal),
     stateChangeCb() {
       forceRerender();
     }

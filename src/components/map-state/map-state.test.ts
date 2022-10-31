@@ -1,12 +1,12 @@
 import { expect, test, assert } from "vitest";
 import {
-  initState,
   MapState,
   MapEffect as MapEffectWithR,
   MapEvent,
   MapStateManager,
 } from ".";
 import { DistributiveOmit } from "../../lib/ts-helpers";
+import { initState } from "./init";
 
 type MapEffect = DistributiveOmit<MapEffectWithR, "result">;
 
@@ -20,7 +20,7 @@ test("initial state /point/BkaLrxXvYx", () => {
   const expectedState: MapState = {
     tag: "pointOpen",
   };
-  expect(initState("point/BkaLrxXvYx")).to.deep.equal(expectedState);
+  expect(initState("/point/BkaLrxXvYx")).to.deep.equal(expectedState);
 });
 
 const latLngClicked: MapEvent = {

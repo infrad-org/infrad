@@ -5,7 +5,7 @@ import type { PageContext } from "./PageContext";
 import { PageLayout } from "../layouts/PageLayout";
 
 // See https://vite-plugin-ssr.com/data-fetching
-export const passToClient = ["pageProps", "loc"];
+export const passToClient = ["pageProps", "loc", "urlOriginal"];
 
 export async function render(pageContext: PageContext) {
   const { Page, pageProps } = pageContext;

@@ -65,21 +65,12 @@ export type MapEffect =
       tag: "createPoint";
       lng: number;
       lat: number;
-    };
-
-export function initState(path?: string): MapState {
-  if (path) {
-    const splitPath = path.split("/");
-    if (splitPath.length == 2 && splitPath[0] === "point") {
-      return {
-        tag: "pointOpen",
-      };
     }
-  }
-  return {
-    tag: "initial",
-  };
-}
+  | {
+      tag: "goToCoords";
+      lng: number;
+      lat: number;
+    };
 
 export class MapStateManager extends StateManager<
   MapState,

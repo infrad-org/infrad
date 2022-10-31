@@ -9,8 +9,6 @@ function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
   const map = useRef<maplibregl.Map | null>(null);
   const { loc } = usePageContext();
 
-  console.log('rerender');
-
   useEffect(() => {
     if (!mapDiv.current) return;
     if (map.current) return;

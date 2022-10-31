@@ -83,5 +83,11 @@ export function getMapLibreEffectHandlers({
         });
       });
     },
+    goToCoords({ lat, lng }) {
+      map.setCenter({
+        lat,
+        lng,
+      });
+    },
   };
 }

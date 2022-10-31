@@ -196,6 +196,18 @@ export class MapStateManager extends StateManager<
             ],
           ];
         },
+        close() {
+          return [
+            {
+              tag: "initial",
+            },
+            [
+              {
+                tag: "closePopup",
+              },
+            ],
+          ];
+        },
       },
       waitingForPointCreated: {
         pointCreated(_state, { lat, lng, id }) {

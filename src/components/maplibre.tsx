@@ -27,12 +27,11 @@ function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
     const handleCreatePointButton = async (innerEvent: MouseEvent) => {
       const target = innerEvent.target;
       if (!(target instanceof Element)) return;
-      if (!target.matches("#createpointbutton")) return;
+      if (!target.matches(".createpointbutton")) return;
       mapStateManager.send({
         tag: "pointCreationConfirmed",
       });
     };
-
     document.addEventListener("click", handleCreatePointButton);
 
     map.current.on("click", (e) => {
@@ -43,7 +42,7 @@ function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
       });
     });
 
-    mapStateManager.updateEffectHandlers(getMapLibreEffectHandlers({ map: map.current }));
+    mapStateManager.updateEffectHandlers(getMapLibreEffectHandlers({ map: map.current, mapStateManager }));
   }, []);
 
   return <>

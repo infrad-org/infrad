@@ -1,17 +1,30 @@
+// @unocss-include
+
 import maplibregl from "maplibre-gl";
-import { MapEffect, MapState, MapEvent } from ".";
+import { MapEffect, MapState, MapEvent, MapStateManager } from ".";
 import { EffectHandlers } from "../../lib/state-manager";
 import { createPoint } from "../../pages/point.telefunc";
 
+const closeIcon =
+  '<svg width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6Z"/></svg>';
+
 export function getMapLibreEffectHandlers({
   map,
+  mapStateManager,
 }: {
   map: maplibregl.Map;
+  mapStateManager: MapStateManager;
 }): EffectHandlers<MapState, MapEvent, MapEffect> {
   return {
     openPopup({ lat, lng }) {
-      const html = `<p>Have something to say about this place?</p>
-      <button id='createpointbutton'>Create place</button>`;
+      const html = `
+      <p>
+      <div class="flex justify-end mr--2 mt--4 pb-2 closepopup">
+        <div class="hover:cursor-pointer">${closeIcon}</div>
+      </div>
+      Have something to say about this place?
+      </p>
+      <button class='createpointbutton'>Create place</button>`;
       const popup = new maplibregl.Popup({
         className: "infradPopup",
         closeButton: false,
@@ -20,6 +33,14 @@ export function getMapLibreEffectHandlers({
         .setLngLat({ lat, lng })
         .setHTML(html)
         .addTo(map);
+      popup
+        .getElement()
+        .querySelector(".closepopup")
+        ?.addEventListener("click", () => {
+          mapStateManager.send({
+            tag: "close",
+          });
+        });
       return {
         close() {
           popup.remove();

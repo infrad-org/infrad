@@ -21,7 +21,6 @@ export function MapLayout({ children }: { children: React.ReactNode }) {
           <Spinner />
         </div>
       </div>
-
       {children}
     </>
   );

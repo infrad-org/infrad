@@ -82,6 +82,27 @@ test("creatingPoint + pointCreationConfirmed -> waitingForPointCreated", () => {
   expect(effects).to.deep.include(effect2);
 });
 
+test("creatingPoint + close -> initial", () => {
+  const sm = new MapStateManager({
+    initialState: {
+      tag: "creatingPoint",
+      lat: 0,
+      lng: 0,
+    },
+  });
+
+  const [newState, effects] = sm.try({
+    tag: "close",
+  });
+  const expectedState: MapState = {
+    tag: "initial",
+  };
+  expect(newState).to.deep.equal(expectedState);
+  const effect1: MapEffect = { tag: "closePopup" };
+  expect(effects).to.have.length(1);
+  expect(effects).to.deep.include(effect1);
+});
+
 test("waitingForPointCreated + pointCreated = pointOpen", () => {
   const sm = new MapStateManager();
 

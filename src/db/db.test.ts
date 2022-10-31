@@ -23,7 +23,7 @@ test("fetch a point", async () => {
   const id = await createPoint(lng, lat);
   const point = await findPoint(id);
   if (!point) throw new Error("findPoint failed to find point");
-  assert(point.hashid === id);
+  assert(point.id === id);
   assert(point.loc[0] === lng);
   assert(point.loc[1] === lat);
 });

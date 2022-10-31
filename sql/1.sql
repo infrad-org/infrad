@@ -37,4 +37,3 @@ CREATE OR REPLACE FUNCTION custom_query(query TEXT, params text) RETURNS SETOF j
 	    DEALLOCATE query;
     END
     $$ LANGUAGE plpgsql;
-

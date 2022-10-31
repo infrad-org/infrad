@@ -39,7 +39,7 @@ export type MapEvent =
       id: string;
     };
 
-export type EffectR =
+export type MapEffect =
   | {
       tag: "openPopup";
       lat: number;
@@ -67,20 +67,10 @@ export type EffectR =
       lat: number;
     };
 
-export const effectConfig: {
-  [effectTag in EffectR["tag"]]?: {
-    afterStateTransition: boolean;
-  };
-} = {
-  createPoint: {
-    afterStateTransition: true,
-  },
-};
+export type EffectsWithResult = Extract<MapEffect, { result: any }>;
+export type EffectsWithoutResult = Exclude<MapEffect, EffectsWithResult>;
 
-export type EffectsWithResult = Extract<EffectR, { result: any }>;
-export type EffectsWithoutResult = Exclude<EffectR, EffectsWithResult>;
-
-export type Effect = DistributiveOmit<EffectR, "result">;
+export type Effect = DistributiveOmit<MapEffect, "result">;
 
 export function initState(): MapState {
   return {
@@ -199,15 +189,10 @@ export class StateManager<
   send(event: Event) {
     console.log("Received event: ", event);
     const [newState, effects] = this.try(event);
-    effects
-      .filter((effect) => !effectConfig[effect.tag]?.afterStateTransition)
-      .forEach((effect) => this.doEffect(effect));
+    effects.forEach((effect) => this.doEffect(effect));
     this.state = newState;
     console.log("New state: ", newState);
     this.stateChangeCb();
-    effects
-      .filter((effect) => effectConfig[effect.tag]?.afterStateTransition)
-      .forEach((effect) => this.doEffect(effect));
   }
 }
 

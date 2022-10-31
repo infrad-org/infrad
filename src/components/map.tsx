@@ -1,14 +1,14 @@
 import maplibregl from "maplibre-gl";
 import React, { useEffect, useReducer, useRef } from "react";
 import { usePageContext } from "../renderer/usePageContext";
-import { StateManager } from "./state";
+import { MapStateManager, StateManager } from "./state";
 
 import "./map.css";
 import { realEffectHandlers } from "./state/real-effect-handlers";
 import { MapLayoutHeader } from "../layouts/MapLayout";
 import { MaterialSymbolsClose } from "./icons";
 
-function Modal({ mapState }: { mapState: StateManager }) {
+function Modal({ mapState }: { mapState: MapStateManager }) {
   return (
     <div className="absolute h-full z-2">
       <div className="flex flex-col h-full z-2">
@@ -37,7 +37,7 @@ function Modal({ mapState }: { mapState: StateManager }) {
 export function Map() {
   const map = useRef<maplibregl.Map | null>(null);
   const mapDiv = useRef<HTMLDivElement | null>(null);
-  const mapState = useRef<StateManager>(new StateManager());
+  const mapState = useRef<MapStateManager>(new MapStateManager());
   const [_, forceRerender] = useReducer((count) => count + 1, 0);
 
   const { loc } = usePageContext();

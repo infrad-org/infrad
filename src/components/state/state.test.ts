@@ -1,5 +1,12 @@
 import { expect, test, assert } from "vitest";
-import { initState, State, Effect, StateManager, Event } from ".";
+import {
+  initState,
+  State,
+  Effect,
+  StateManager,
+  Event,
+  MapStateManager,
+} from ".";
 
 test("initial state", () => {
   expect(initState()).to.deep.equal({
@@ -31,7 +38,7 @@ test("handleEvent latLngClicked", () => {
 });
 
 test("creatingPoint + latLngClicked", () => {
-  const sm = new StateManager();
+  const sm = new MapStateManager();
   sm.send(latLngClicked);
   const [newState, effects] = sm.try(latLngClicked);
   assert(newState.tag === "creatingPoint");
@@ -48,7 +55,7 @@ test("creatingPoint + latLngClicked", () => {
 });
 
 test("creatingPoint + pointCreationConfirmed -> waitingForPointCreated", () => {
-  const sm = new StateManager();
+  const sm = new MapStateManager();
 
   sm.send(latLngClicked);
   const [newState, effects] = sm.try({
@@ -67,7 +74,7 @@ test("creatingPoint + pointCreationConfirmed -> waitingForPointCreated", () => {
 });
 
 test("waitingForPointCreated + pointCreated = pointOpen", () => {
-  const sm = new StateManager();
+  const sm = new MapStateManager();
 
   const { lat, lng } = latLngClicked;
   sm.send(latLngClicked);
@@ -120,7 +127,7 @@ test("pointOpen + close = initial", () => {
 });
 
 test("initial + openPoint = pointOpen", () => {
-  const sm = new StateManager();
+  const sm = new MapStateManager();
   const id = "some-id";
   const [newState, effects] = sm.try({
     tag: "openPoint",

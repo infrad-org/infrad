@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^3.18.0",
+    "@types/node-fetch": "^2.6.2",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.7",
     "@unocss/preset-wind": "^0.45.26",

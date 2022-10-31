@@ -105,7 +105,7 @@ type EffectHandlerArgs<effectTag extends string> = [
   effect: Effect & { tag: effectTag },
   config: {
     effectResultHistory: EffectResultHistory;
-    send: StateManager["send"];
+    send: MapStateManager["send"];
   }
 ];
 
@@ -137,8 +137,8 @@ const openPoint: NonNullable<EventHandlers["initial"]>["openPoint"] &
   ];
 };
 
-export class StateManager<State> {
-  state: State = initState();
+export class StateManager<State extends { tag: string }> {
+  state: State;
   eventHandlers: EventHandlers = {
     initial: {
       latLngClicked(state, event) {
@@ -244,11 +244,11 @@ export class StateManager<State> {
   }: {
     effectHandlers?: EffectHandlers;
     stateChangeCb?: () => void;
-    initialState?: State;
-  } = {}) {
+    initialState: State;
+  }) {
     if (effectHandlers) this.effectHandlers = effectHandlers;
     if (stateChangeCb) this.stateChangeCb = stateChangeCb;
-    if (initialState) this.state = initialState;
+    this.state = initialState;
   }
 
   /**
@@ -288,5 +288,19 @@ export class StateManager<State> {
     effects
       .filter((effect) => effectConfig[effect.tag]?.afterStateTransition)
       .forEach((effect) => this.doEffect(effect));
+  }
+}
+
+export class MapStateManager extends StateManager<State> {
+  constructor({
+    effectHandlers,
+    initialState,
+    stateChangeCb,
+  }: Partial<ConstructorParameters<typeof StateManager<State>>[0]> = {}) {
+    super({
+      initialState: initialState ? initialState : initState(),
+      effectHandlers,
+      stateChangeCb,
+    });
   }
 }

@@ -139,7 +139,7 @@ test("waitingForPointCreated + pointCreated = pointOpen", () => {
   expect(effects).to.deep.include(effect2);
 });
 
-test("pointOpen + close = initial", () => {
+test("pointOpen(loading=true) + close = initial", () => {
   const sm = new MapStateManager({
     initialState: {
       tag: "pointOpen",
@@ -161,7 +161,48 @@ test("pointOpen + close = initial", () => {
   expect(effects).to.deep.contain(effect1);
 });
 
-test("initial + openPoint(loading=true) = pointOpen", () => {
+test("pointOpen(loading=true) + pointLoaded(found) = pointOpen(loading=false)", () => {
+  const sm = new MapStateManager({
+    initialState: {
+      tag: "pointOpen",
+      status: "loading",
+    },
+  });
+  const [newState, effects] = sm.try({
+    tag: "pointLoaded",
+    point: {
+      data: {},
+    },
+  });
+  const expectedState: MapState = {
+    tag: "pointOpen",
+    status: "found",
+    data: {},
+  };
+  expect(newState).to.deep.equal(expectedState);
+  expect(effects).to.have.length(0);
+});
+
+test("pointOpen(loading=true) + pointLoaded(not found) = pointOpen(loading=false)", () => {
+  const sm = new MapStateManager({
+    initialState: {
+      tag: "pointOpen",
+      status: "loading",
+    },
+  });
+  const [newState, effects] = sm.try({
+    tag: "pointLoaded",
+    point: null,
+  });
+  const expectedState: MapState = {
+    tag: "pointOpen",
+    status: "notFound",
+  };
+  expect(newState).to.deep.equal(expectedState);
+  expect(effects).to.have.length(0);
+});
+
+test("initial + openPoint = pointOpen(loading=true)", () => {
   const sm = new MapStateManager();
   const id = "some-id";
   const [newState, effects] = sm.try({
@@ -177,8 +218,13 @@ test("initial + openPoint(loading=true) = pointOpen", () => {
     tag: "urlChange",
     path: `/point/${id}`,
   };
-  expect(effects).to.have.length(1);
+  const effect2: MapEffect = {
+    tag: "loadPoint",
+    id: id,
+  };
+  expect(effects).to.have.length(2);
   expect(effects).to.deep.include(effect1);
+  expect(effects).to.deep.include(effect2);
 });
 
 test("creatingPoint + openPoint", () => {

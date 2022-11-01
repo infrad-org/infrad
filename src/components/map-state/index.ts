@@ -51,7 +51,13 @@ export type MapEvent =
   | {
       tag: "openPoint";
       id: string;
-    };
+    }
+  | PointLoaded;
+
+export type PointLoaded = {
+  tag: "pointLoaded";
+  point: Omit<PointOpen & { status: "found" }, "status" | "tag"> | null;
+};
 
 export type MapEffect =
   | {
@@ -152,6 +158,10 @@ export class MapStateManager extends StateManager<
               {
                 tag: "urlChange",
                 path: `/point/${event.id}`,
+              },
+              {
+                tag: "loadPoint",
+                id: event.id,
               },
             ],
           ];
@@ -263,6 +273,28 @@ export class MapStateManager extends StateManager<
                 path: "/create",
               },
             ],
+          ];
+        },
+        pointLoaded(state, event) {
+          if (state.status !== "loading") {
+            return [state, []];
+          }
+          if (!event.point) {
+            return [
+              {
+                tag: "pointOpen",
+                status: "notFound",
+              },
+              [],
+            ];
+          }
+          return [
+            {
+              ...event.point,
+              status: "found",
+              tag: "pointOpen",
+            },
+            [],
           ];
         },
       },

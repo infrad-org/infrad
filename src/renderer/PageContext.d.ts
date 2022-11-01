@@ -1,5 +1,6 @@
 import React from "react";
 import { PointContext } from "../pages/point/@id/index.page.server";
+import { Session } from "../worker/auth";
 
 export type PageContext = {
   urlOriginal: string;
@@ -10,4 +11,5 @@ export type PageContext = {
   pageProps: any;
   loc?: { lat: number; long: number };
   point?: PointContext;
+  session: Session | null;
 };

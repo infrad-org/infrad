@@ -1,5 +1,6 @@
 import { renderPage } from "vite-plugin-ssr";
 import { PageContext } from "../renderer/PageContext";
+import { Session } from "./auth";
 
 function getLoc(cf?: IncomingRequestCfProperties) {
   return cf &&
@@ -12,15 +13,24 @@ function getLoc(cf?: IncomingRequestCfProperties) {
 
 export async function handleSsr(
   url: string,
-  userAgent: string,
-  cf?: IncomingRequestCfProperties
+  {
+    userAgent,
+    cf,
+    session,
+  }: {
+    userAgent: string;
+    cf?: IncomingRequestCfProperties;
+    session: Session | null;
+  }
 ) {
   const pageContextInit: Omit<PageContext, "Page" | "exports" | "pageProps"> = {
     urlOriginal: url,
     fetch,
     userAgent,
     loc: getLoc(cf),
+    session,
   };
+  console.log("pageContextInit", pageContextInit.session);
   const pageContext = await renderPage(pageContextInit);
   const { httpResponse } = pageContext;
   if (!httpResponse) {

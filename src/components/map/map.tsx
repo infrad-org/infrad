@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
-import { MapState, MapStateManager } from "./map-state";
+import { MapState, MapStateManager } from "../../app/map-state/map-state";
 
 import "./map.css";
-import { MaterialSymbolsClose } from "./icons";
-import { onGetAllPoints } from "./map.telefunc";
+import { MaterialSymbolsClose } from "../icons";
+import { onGetAllPoints } from "../../app/map-state/map.telefunc";
 import { MapLibre } from "./maplibre";
-import { MapLayoutHeader } from "../layouts/MapLayout";
-import { useMapStateManager } from "./map-state/context";
+import { MapLayoutHeader } from "../../layouts/MapLayout";
+import { useMapStateManager } from "../../app/map-state/map-state-context";
 
 function Modal({ state }: { state: MapState & { tag: 'pointOpen' } }) {
   const mapStateManager = useMapStateManager();

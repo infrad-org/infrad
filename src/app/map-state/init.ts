@@ -1,4 +1,4 @@
-import { MapState } from ".";
+import { MapState } from "./map-state";
 import { PageContext } from "../../renderer/PageContext";
 import { usePageContext } from "../../renderer/usePageContext";
 

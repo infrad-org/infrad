@@ -1,8 +1,8 @@
 import maplibregl from "maplibre-gl";
 import React, { useEffect, useRef } from "react";
-import { usePageContext } from "../renderer/usePageContext";
-import { MapStateManager } from "./map-state";
-import { getMapLibreEffectHandlers } from "./map-state/map-libre-effect-handlers";
+import { usePageContext } from "../../renderer/usePageContext";
+import { MapStateManager } from "../../app/map-state/map-state";
+import { getMapLibreEffectHandlers } from "../../app/map-state/map-libre-effect-handlers";
 
 function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
   const mapDiv = useRef<HTMLDivElement | null>(null);

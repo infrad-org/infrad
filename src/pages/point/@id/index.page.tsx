@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useMapStateManager } from '../../../components/map-state/context';
+import { useMapStateManager } from '../../../app/map-state/map-state-context';
 import { MapLayout } from "../../../layouts/MapLayout";
 import { usePageContext } from '../../../renderer/usePageContext';
 import { onBeforeRender } from './index.page.server';

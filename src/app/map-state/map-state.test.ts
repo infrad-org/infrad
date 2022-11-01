@@ -4,7 +4,7 @@ import {
   MapEffect as MapEffectWithR,
   MapEvent,
   MapStateManager,
-} from ".";
+} from "./map-state";
 import { DistributiveOmit } from "../../lib/ts-helpers";
 import { initState } from "./init";
 

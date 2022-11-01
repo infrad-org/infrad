@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useRef } from 'react';
-import { MapStateManager } from '.';
+import { MapStateManager } from './map-state';
 import { usePageContext } from '../../renderer/usePageContext';
 import { initState } from './init';
 

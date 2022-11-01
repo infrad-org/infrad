@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 import Spinner from "../components/spinner/Spinner";
-import { Map } from '../components/map';
-import { MapStateManagerProvider } from "../components/map-state/context";
+import { Map } from '../components/map/map';
+import { MapStateManagerProvider } from "../app/map-state/map-state-context";
 import { usePageContext } from "../renderer/usePageContext";
 
 function LoginButton() {

@@ -80,7 +80,7 @@ export async function runQuery(
 
 export async function findPoint(id: string) {
   const result = await runQuery(
-    "SELECT hashid as id, (loc::json->>'coordinates')::json loc from points WHERE hashid = $1::json->>'id'",
+    "SELECT hashid as id, (loc::json->>'coordinates')::json loc, data from points WHERE hashid = $1::json->>'id'",
     {
       id,
     }
@@ -90,6 +90,9 @@ export async function findPoint(id: string) {
       z.object({
         id: z.string(),
         loc: z.tuple([z.number(), z.number()]),
+        data: z.object({
+          entries: z.array(z.string()).optional(),
+        }),
       })
     )
     .max(1)

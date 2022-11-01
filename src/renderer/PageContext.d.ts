@@ -1,5 +1,5 @@
-import type fetch from "node-fetch";
 import React from "react";
+import { PointContext } from "../pages/point/@id/index.page.server";
 
 export type PageContext = {
   urlOriginal: string;
@@ -9,4 +9,5 @@ export type PageContext = {
   userAgent: string;
   pageProps: any;
   loc?: { lat: number; long: number };
+  point?: PointContext;
 };

@@ -9,9 +9,11 @@ export async function onBeforeRender({
   const point = await findPoint(routeParams.id);
   return {
     pageContext: {
-      pageProps: {
-        point,
-      },
+      point,
     },
   };
 }
+
+export type PointContext = Awaited<
+  ReturnType<typeof onBeforeRender>
+>["pageContext"]["point"];

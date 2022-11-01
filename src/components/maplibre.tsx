@@ -22,6 +22,8 @@ function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
       zoom: 12, // starting zoom
     });
 
+    map.current.dragRotate.disable();
+
     const handleCreatePointButton = async (innerEvent: MouseEvent) => {
       const target = innerEvent.target;
       if (!(target instanceof Element)) return;

@@ -1,4 +1,20 @@
 import { StateManager, EffectHandlers } from "../../lib/state-manager";
+import { initState } from "./init";
+
+type PointOpen = {
+  tag: "pointOpen";
+} & (
+  | {
+      status: "loading";
+    }
+  | {
+      status: "found";
+      data: Record<string, any>;
+    }
+  | {
+      status: "notFound";
+    }
+);
 
 export type MapState =
   | {
@@ -12,9 +28,7 @@ export type MapState =
   | {
       tag: "waitingForPointCreated";
     }
-  | {
-      tag: "pointOpen";
-    };
+  | PointOpen;
 
 export type MapEvent =
   | {
@@ -70,6 +84,10 @@ export type MapEffect =
       tag: "goToCoords";
       lng: number;
       lat: number;
+    }
+  | {
+      tag: "loadPoint";
+      id: string;
     };
 
 export class MapStateManager extends StateManager<
@@ -128,6 +146,7 @@ export class MapStateManager extends StateManager<
           return [
             {
               tag: "pointOpen",
+              status: "loading",
             },
             [
               {
@@ -179,6 +198,7 @@ export class MapStateManager extends StateManager<
           return [
             {
               tag: "pointOpen",
+              status: "loading",
             },
             [
               {
@@ -187,6 +207,10 @@ export class MapStateManager extends StateManager<
               },
               {
                 tag: "closePopup",
+              },
+              {
+                tag: "loadPoint",
+                id: event.id,
               },
             ],
           ];
@@ -209,6 +233,8 @@ export class MapStateManager extends StateManager<
           return [
             {
               tag: "pointOpen",
+              status: "found",
+              data: {},
             },
             [
               {

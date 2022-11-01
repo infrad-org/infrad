@@ -17,7 +17,7 @@ export async function handleSsr(
 ) {
   const pageContextInit: Omit<PageContext, "Page" | "exports" | "pageProps"> = {
     urlOriginal: url,
-    fetch: (...args: Parameters<typeof fetch>) => fetch(...args),
+    fetch,
     userAgent,
     loc: getLoc(cf),
   };

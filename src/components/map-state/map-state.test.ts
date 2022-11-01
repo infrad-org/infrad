@@ -16,13 +16,6 @@ test("initial state", () => {
   });
 });
 
-test("initial state /point/BkaLrxXvYx", () => {
-  const expectedState: MapState = {
-    tag: "pointOpen",
-  };
-  expect(initState("/point/BkaLrxXvYx")).to.deep.equal(expectedState);
-});
-
 const latLngClicked: MapEvent = {
   tag: "latLngClicked",
   lat: 0,
@@ -150,6 +143,7 @@ test("pointOpen + close = initial", () => {
   const sm = new MapStateManager({
     initialState: {
       tag: "pointOpen",
+      status: "loading",
     },
   });
   const [newState, effects] = sm.try({
@@ -167,7 +161,7 @@ test("pointOpen + close = initial", () => {
   expect(effects).to.deep.contain(effect1);
 });
 
-test("initial + openPoint = pointOpen", () => {
+test("initial + openPoint(loading=true) = pointOpen", () => {
   const sm = new MapStateManager();
   const id = "some-id";
   const [newState, effects] = sm.try({
@@ -176,6 +170,7 @@ test("initial + openPoint = pointOpen", () => {
   });
   const expectedState: MapState = {
     tag: "pointOpen",
+    status: "loading",
   };
   expect(newState).to.deep.equal(expectedState);
   const effect1: MapEffect = {
@@ -201,6 +196,7 @@ test("creatingPoint + openPoint", () => {
   });
   const expectedState: MapState = {
     tag: "pointOpen",
+    status: "loading",
   };
   expect(newState).to.deep.equal(expectedState);
   const effect1: MapEffect = {
@@ -210,7 +206,12 @@ test("creatingPoint + openPoint", () => {
   const effect2: MapEffect = {
     tag: "closePopup",
   };
-  expect(effects).to.have.length(2);
+  const effect3: MapEffect = {
+    tag: "loadPoint",
+    id,
+  };
+  expect(effects).to.have.length(3);
   expect(effects).to.deep.include(effect1);
   expect(effects).to.deep.include(effect2);
+  expect(effect3).to.deep.include(effect3);
 });

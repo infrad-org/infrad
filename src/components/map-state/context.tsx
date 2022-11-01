@@ -15,10 +15,8 @@ export function useMapStateManager() {
 }
 
 export function MapStateManagerProvider({ children, forceRerender }: { children: ReactNode, forceRerender: () => void }) {
-  const { urlOriginal } = usePageContext();
-
   const mapStateManager = useRef<MapStateManager>(new MapStateManager({
-    initialState: initState(urlOriginal),
+    initialState: initState(usePageContext()),
     stateChangeCb() {
       forceRerender();
     }

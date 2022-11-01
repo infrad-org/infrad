@@ -1,13 +1,20 @@
 import { MapState } from ".";
+import { PageContext } from "../../renderer/PageContext";
+import { usePageContext } from "../../renderer/usePageContext";
 
-export function initState(path?: string): MapState {
-  if (path) {
-    const splitPath = path.slice(1).split("/");
-    if (splitPath.length == 2 && splitPath[0] === "point") {
-      return {
-        tag: "pointOpen",
-      };
-    }
+export function initState({ point }: Partial<PageContext> = {}): MapState {
+  if (point) {
+    return {
+      tag: "pointOpen",
+      status: "found",
+      data: point.data,
+    };
+  }
+  if (point === null) {
+    return {
+      tag: "pointOpen",
+      status: "notFound",
+    };
   }
   return {
     tag: "initial",

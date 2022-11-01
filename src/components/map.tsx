@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { MapStateManager } from "./map-state";
+import { MapState, MapStateManager } from "./map-state";
 
 import "./map.css";
 import { MaterialSymbolsClose } from "./icons";
@@ -8,7 +8,8 @@ import { MapLibre } from "./maplibre";
 import { MapLayoutHeader } from "../layouts/MapLayout";
 import { useMapStateManager } from "./map-state/context";
 
-function Modal({ mapState }: { mapState: MapStateManager }) {
+function Modal({ state }: { state: MapState & { tag: 'pointOpen' } }) {
+  const mapStateManager = useMapStateManager();
   return (
     <div className="absolute h-full z-2">
       <div className="flex flex-col h-full z-2">
@@ -20,13 +21,18 @@ function Modal({ mapState }: { mapState: MapStateManager }) {
             <div
               className="p-2 cursor-pointer"
               onClick={() => {
-                mapState.send({
+                mapStateManager.send({
                   tag: "close",
                 });
               }}
             >
               <MaterialSymbolsClose className="w-10" />
             </div>
+          </div>
+          <div className="mx-10">
+            {state.status === 'found' && `found, data: ${JSON.stringify(state.data, null, 2)}`}
+            {state.status === 'loading' && 'loading'}
+            {state.status === 'notFound' && 'notFound'}
           </div>
         </div>
       </div>
@@ -56,7 +62,7 @@ export function Map() {
   return (
     <>
       <MapLibre mapStateManager={mapStateManager} />
-      {mapStateManager.state.tag === "pointOpen" && <Modal mapState={mapStateManager} />}
+      {mapStateManager.state.tag === "pointOpen" && <Modal state={mapStateManager.state} />}
     </>
   );
 }

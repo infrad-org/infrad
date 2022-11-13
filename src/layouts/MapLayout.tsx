@@ -3,6 +3,7 @@ import Spinner from "../components/spinner/Spinner";
 import { Map } from '../components/map/map';
 import { MapStateManagerProvider } from "../app/map-state/map-state-context";
 import { usePageContext } from "../renderer/usePageContext";
+import { navigate } from "vite-plugin-ssr/client/router";
 
 function LoginButton() {
   function handleClick() {
@@ -10,7 +11,8 @@ function LoginButton() {
       await fetch('/login', {
         method: 'POST'
       });
-      location.reload();
+      // location.reload();
+      navigate('/login')
     })();
   }
 
@@ -49,8 +51,14 @@ function LoginControls() {
 
 function Infrad() {
   return (
-    <div className="flex flex-row">
-      <img src="/logo.svg" className="max-h-3em pr-3" />
+    <div className="flex flex-row z-10" onClick={() => {
+      console.log('bam')
+      navigate('/create')
+    }}>
+      <img src="/logo.svg" className="max-h-3em pr-3" onClick={() => {
+        console.log('bam')
+        navigate('/create')
+      }} />
       <h1 className="text-5xl text-dark-orange">Infrad</h1>
     </div>)
 }
@@ -74,14 +82,16 @@ export function MapLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <MapStateManagerProvider forceRerender={forceRerender}>
-        <div className="absolute h-full w-full flex flex-col">
+        <div className="absolute w-full flex flex-col">
           <MapLayoutHeader />
-          <div className="grow flex justify-center items-center">
+          {/* <div className="grow flex justify-center items-center">
             <Spinner />
+          </div> */}
+          {children}
+          <div className="grow bg-white z-2 opacity-80 m-10">
           </div>
         </div>
         <Map />
-        {children}
       </MapStateManagerProvider>
     </>
   );

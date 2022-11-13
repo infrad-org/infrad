@@ -53,7 +53,7 @@ function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
         top: "0",
         position: "absolute",
         width: "100vw",
-        height: "100vh",
+        height: mapStateManager.state.tag === 'pointOpen' ? "50vh" : "100vh",
       }}
       ref={mapDiv}
     ></div>

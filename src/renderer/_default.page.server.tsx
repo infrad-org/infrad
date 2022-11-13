@@ -29,6 +29,9 @@ export async function render(pageContext: PageContext) {
         <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
       </head>
       <body>
+      <!---<div
+        id="map"
+        style="left: 0; top: 0; position: absolute; width: 100vw; height: 100vh;"></div>--->
         <div id="page-view">${stream}</div>
       </body>
     </html>`;

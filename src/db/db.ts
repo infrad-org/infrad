@@ -91,7 +91,13 @@ export async function findPoint(id: string) {
         id: z.string(),
         loc: z.tuple([z.number(), z.number()]),
         data: z.object({
-          entries: z.array(z.string()).optional(),
+          comments: z
+            .array(
+              z.object({
+                type: z.literal("text"),
+              })
+            )
+            .optional(),
         }),
       })
     )
@@ -112,4 +118,22 @@ export async function getAllPoints() {
       })
     )
     .parse(result);
+}
+
+export async function addCommentToPoint(id: string, comment: Record<any, any>) {
+  await runQuery(
+    `
+  update points
+    set data = jsonb_set(data,
+      '{comments}',
+      COALESCE(data->'comments', '[]'::jsonb) || to_jsonb(($1::json->>'comment')::json)
+  )
+  where hashid = $1::json->>'id'
+  RETURNING id
+`,
+    {
+      id: id,
+      comment: JSON.stringify(comment),
+    }
+  );
 }

@@ -1,14 +1,12 @@
 import React, { useEffect } from "react";
 import { MapState, MapStateManager } from "../../app/map-state/map-state";
-
-import "./map.css";
 import { MaterialSymbolsClose } from "../icons";
 import { onGetAllPoints } from "../../app/map-state/map.telefunc";
-import { MapLibre } from "./maplibre";
 import { MapLayoutHeader } from "../../layouts/MapLayout";
 import { useMapStateManager } from "../../app/map-state/map-state-context";
+import { MapLibre } from "./maplibre";
 
-function Modal({ state }: { state: MapState & { tag: 'pointOpen' } }) {
+function Modal({ state }: { state: MapState & { tag: "pointOpen" } }) {
   const mapStateManager = useMapStateManager();
   return (
     <div className="absolute h-full z-2">
@@ -30,30 +28,32 @@ function Modal({ state }: { state: MapState & { tag: 'pointOpen' } }) {
             </div>
           </div>
           <div className="mx-10">
-            {state.status === 'found' && `found, data: ${JSON.stringify(state.data, null, 2)}`}
-            {state.status === 'loading' && 'loading'}
-            {state.status === 'notFound' && 'notFound'}
+            {state.status === "found" &&
+              `found, data: ${JSON.stringify(state.data, null, 2)}`}
+            {state.status === "loading" && "loading"}
+            {state.status === "notFound" && "notFound"}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function useAllPoints(mapStateManager: MapStateManager) {
   useEffect(() => {
     (async () => {
       const points = await onGetAllPoints();
-      points.forEach(({ id, loc }) => mapStateManager.doEffect({
-        tag: 'addMarker',
-        id,
-        lng: loc[0],
-        lat: loc[1]
-      }));
+      points.forEach(({ id, loc }) =>
+        mapStateManager.doEffect({
+          tag: "addMarker",
+          id,
+          lng: loc[0],
+          lat: loc[1],
+        })
+      );
     })();
   }, []);
 }
-
 
 export function Map() {
   const mapStateManager = useMapStateManager();
@@ -62,7 +62,9 @@ export function Map() {
   return (
     <>
       <MapLibre mapStateManager={mapStateManager} />
-      {mapStateManager.state.tag === "pointOpen" && <Modal state={mapStateManager.state} />}
+      {mapStateManager.state.tag === "pointOpen" && (
+        <Modal state={mapStateManager.state} />
+      )}
     </>
   );
 }

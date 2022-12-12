@@ -5,7 +5,14 @@ import type { PageContext } from "./PageContext";
 import { PageLayout } from "../layouts/PageLayout";
 
 // See https://vite-plugin-ssr.com/data-fetching
-export const passToClient = ["pageProps", "loc", "urlOriginal", "point", "session"];
+export const passToClient = [
+  "pageProps",
+  "loc",
+  "urlOriginal",
+  "point",
+  "session",
+  "routeParams",
+];
 
 export async function render(pageContext: PageContext) {
   const { Page, pageProps } = pageContext;
@@ -27,7 +34,11 @@ export async function render(pageContext: PageContext) {
         <title>Infrad</title>
         <link rel="icon" type="image/png" href="/favicon.png">
         <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
-      </head>
+        <meta property="og:title" content="Infrad" />
+        <meta property="og:url" content="https://infrad.app">
+        <meta property="og:description" content="Create your own crowdsourced infrastructure intelligence community">
+        <meta property="og:image" content="/header.jpg" />
+        </head>
       <body>
       <!---<div
         id="map"

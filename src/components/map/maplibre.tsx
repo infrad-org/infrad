@@ -4,6 +4,12 @@ import { usePageContext } from "../../renderer/usePageContext";
 import { MapStateManager } from "../../app/map-state/map-state";
 import { getMapLibreEffectHandlers } from "../../app/map-state/map-libre-effect-handlers";
 
+type Tweet = {
+  lat: number;
+  lng: number;
+  url: string;
+};
+
 function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
   const mapDiv = useRef<HTMLDivElement | null>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -18,7 +24,7 @@ function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
       container: "map",
       style:
         "https://api.maptiler.com/maps/basic-v2/style.json?key=FTNrjsa7Nahw874tmMi7", // stylesheet location
-      center: [loc?.long || -74.5, loc?.lat || 40], // starting position [lng, lat]
+      center: [6.09443220658732, 52.51228602846009], // starting position [lng, lat]
       zoom: 12, // starting zoom
     });
 
@@ -42,7 +48,13 @@ function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
       });
     });
 
-    mapStateManager.updateEffectHandlers(getMapLibreEffectHandlers({ map: map.current, mapStateManager }));
+    map.current.on("click", (e) => {
+      console.log(e.lngLat);
+    });
+
+    // mapStateManager.updateEffectHandlers(
+    //   getMapLibreEffectHandlers({ map: map.current, mapStateManager })
+    // );
   }, []);
 
   return <>

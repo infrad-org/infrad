@@ -1,3 +1,3 @@
 -- down migration
 
-DROP SCHEMA hashids;
+DROP SCHEMA hashids CASCADE;

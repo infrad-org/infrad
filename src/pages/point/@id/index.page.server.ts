@@ -1,4 +1,4 @@
-import { findPoint } from "../../../db/db";
+// import { findPoint } from "../../../db/db";
 import { PageContext } from "../../../renderer/PageContext";
 
 export async function onBeforeRender({
@@ -6,14 +6,14 @@ export async function onBeforeRender({
 }: PageContext & {
   routeParams: { id: string };
 }) {
-  const point = await findPoint(routeParams.id);
+  // const point = await findPoint(routeParams.id);
   return {
     pageContext: {
-      point,
+      // point,
     },
   };
 }
 
-export type PointContext = Awaited<
-  ReturnType<typeof onBeforeRender>
->["pageContext"]["point"];
+// export type PointContext = Awaited<
+//   ReturnType<typeof onBeforeRender>
+// >["pageContext"]["point"];

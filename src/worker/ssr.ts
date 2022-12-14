@@ -30,7 +30,6 @@ export async function handleSsr(
     loc: getLoc(cf),
     session,
   };
-  console.log("pageContextInit", pageContextInit.session);
   const pageContext = await renderPage(pageContextInit);
   const { httpResponse } = pageContext;
   if (!httpResponse) {

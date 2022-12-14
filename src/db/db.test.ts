@@ -1,54 +1,50 @@
-import { afterEach, assert, expect, test } from "vitest";
-import {
-  resetDb,
-  createPoint,
-  findPoint,
-  getAllPoints,
-  addCommentToPoint,
-} from "./db";
+import { Point } from "geojson";
+import { Client } from "pg";
+import { expect, test, assert } from "vitest";
+import { ClientWrapper } from "./db";
 
-afterEach(async () => {
-  resetDb();
+const client = new Client({
+  connectionString: "postgres://louwers:password@localhost/infraddb",
 });
+const w = new ClientWrapper(client);
 
-test("creating a point", async () => {
-  const result = await createPoint(0, 0);
-  assert(
-    typeof result === "string",
-    `expected result to be string, instead got ${result}`
-  );
-  assert(
-    result.length === 10,
-    `expected result to have length 10, instead got length ${result.length}, result=${result}`
-  );
-});
+test("updateWhatsAppConversation()", async () => {
+  await client.connect();
 
-test("fetch a point", async () => {
-  const lng = 1.0;
-  const lat = 2.0;
-  const id = await createPoint(lng, lat);
-  const point = await findPoint(id);
-  if (!point) throw new Error("findPoint failed to find point");
-  assert(point.id === id);
-  assert(point.loc[0] === lng);
-  assert(point.loc[1] === lat);
-});
+  const description1 = "my description";
 
-test("getAllPoints()", async () => {
-  await createPoint(0, 0);
-  const allPoints = await getAllPoints();
-  expect(allPoints).to.have.length.greaterThanOrEqual(1);
-});
+  const result1 = await w.updateWhatsAppConversation({
+    phoneNumberId: "test",
+    content: {
+      type: "description",
+      value: description1,
+    },
+  });
+  if (result1.status !== "pending") throw new Error();
+  expect(result1.value.pending_description).to.equal(description1);
 
-test("addCommentToPoint", async () => {
-  const id = await createPoint(0, 0);
-  const content = "hello world";
-  await addCommentToPoint(id, { type: "text", content });
-  const point = await findPoint(id);
-  if (!point) throw new Error("point is null");
-  expect(point.data.comments).to.have.length(1);
-  await addCommentToPoint(id, { type: "text", content });
-  const point2 = await findPoint(id);
-  if (!point2) throw new Error("point is null");
-  expect(point2.data.comments).to.have.length(2);
+  const description2 = "my description 2";
+  const result2 = await w.updateWhatsAppConversation({
+    phoneNumberId: "test",
+    content: {
+      type: "description",
+      value: description2,
+    },
+  });
+  if (result2.status !== "pending") throw new Error();
+  expect(result2.value.pending_description).to.equal(description2);
+  const point: Point = {
+    coordinates: [30.0, 30.0],
+    type: "Point",
+  };
+  const result3 = await w.updateWhatsAppConversation({
+    phoneNumberId: "test",
+    content: {
+      type: "location",
+      value: point,
+    },
+  });
+  if (result3.status !== "point_created") throw new Error();
+  assert(result3.value.description === description2);
+  expect(result3.value.location).to.deep.equal(point);
 });

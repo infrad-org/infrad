@@ -1,139 +1,62 @@
-import env from "../env.json";
+import type { Client } from "pg";
 import { z } from "zod";
+import type { Point } from "geojson";
+import { pointSchema } from "./geojson.zod";
 
-export async function resetDb() {
-  await fetch("http://localhost:3000/rpc/reset_db", {
-    method: "POST",
-  });
-}
-
-function baseUrl() {
-  if (globalThis.ENVIRONMENT) return `https://${env.SUPABASE_HOST}/rest/v1`;
-  return "http://localhost:3000";
-}
-
-function createHeaders() {
-  return new Headers({
-    "content-type": "application/json",
-    ...(globalThis.SUPABASE_API_KEY
-      ? { apiKey: globalThis.SUPABASE_API_KEY }
-      : {}),
-  });
-}
-
-async function rpc(method: string, body: Record<any, any>) {
-  return fetch(`${baseUrl()}/rpc/${method}`, {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: createHeaders(),
-  });
-}
-
-export async function createUser(username: string, password: string) {
-  const response = await rpc("create_user", {
-    username,
-    password,
-  });
-  return response.text();
-}
-
-export async function createPoint(long: number, lat: number) {
-  const response = await rpc("create_point", {
-    lat,
-    long,
-  });
-  const result = await response.json();
-  if (typeof result !== "string") {
-    throw new Error(
-      `Unexpeced response from create_point: ${JSON.stringify(result, null, 2)}`
-    );
+export class ClientWrapper {
+  client: Client;
+  constructor(client: Client) {
+    this.client = client;
   }
-  return result;
-}
 
-export async function runQuery(
-  query: string,
-  params: Record<string, string> = {}
-) {
-  const response = await rpc("custom_query", {
-    query,
-    params: JSON.stringify(params),
-  });
-  if (response.status !== 200) {
-    throw new Error(
-      `${JSON.stringify(
-        {
-          message: "Failed to execute custom_query",
-          response: {
-            status: response.status,
-            statusText: response.statusText,
-            response: await response.json(),
-          },
-        },
-        null,
-        2
-      )}`
-    );
-  }
-  return response.json();
-}
-
-export async function findPoint(id: string) {
-  const result = await runQuery(
-    "SELECT hashid as id, (loc::json->>'coordinates')::json loc, data from points WHERE hashid = $1::json->>'id'",
-    {
-      id,
-    }
-  );
-  return z
-    .array(
-      z.object({
-        id: z.string(),
-        loc: z.tuple([z.number(), z.number()]),
-        data: z.object({
-          comments: z
-            .array(
-              z.object({
-                type: z.literal("text"),
-              })
-            )
-            .optional(),
+  async updateWhatsAppConversation({
+    phoneNumberId,
+    content,
+  }: {
+    phoneNumberId: string;
+    content:
+      | {
+          type: "description";
+          value: string;
+        }
+      | {
+          type: "location";
+          value: Point;
+        };
+  }) {
+    const { rows } = await this.client.query(
+      "SELECT update_whatsapp_conv($1::jsonb)",
+      [
+        JSON.stringify({
+          phone_number_id: phoneNumberId,
+          ...(content.type === "description"
+            ? { description: content.value }
+            : { location: content.value }),
         }),
-      })
-    )
-    .max(1)
-    .transform((val) => (val.length ? val[0] : null))
-    .parse(result);
-}
+      ]
+    );
+    const pendingSchema = z.object({
+      status: z.literal("pending"),
+      value: z.object({
+        pending_description: z.string(),
+      }),
+    });
 
-export async function getAllPoints() {
-  const result = await runQuery(
-    "SELECT hashid as id, (loc::json->>'coordinates')::json loc from points"
-  );
-  return z
-    .array(
-      z.object({
-        id: z.string(),
-        loc: z.tuple([z.number(), z.number()]),
-      })
-    )
-    .parse(result);
-}
+    const pointCreatedSchema = z.object({
+      status: z.literal("point_created"),
+      value: z.object({
+        description: z.string(),
+        location: pointSchema,
+      }),
+    });
 
-export async function addCommentToPoint(id: string, comment: Record<any, any>) {
-  await runQuery(
-    `
-  update points
-    set data = jsonb_set(data,
-      '{comments}',
-      COALESCE(data->'comments', '[]'::jsonb) || to_jsonb(($1::json->>'comment')::json)
-  )
-  where hashid = $1::json->>'id'
-  RETURNING id
-`,
-    {
-      id: id,
-      comment: JSON.stringify(comment),
-    }
-  );
+    const schema = z
+      .array(
+        z.object({
+          update_whatsapp_conv: z.union([pendingSchema, pointCreatedSchema]),
+        })
+      )
+      .length(1);
+    return schema.parse(rows)[0].update_whatsapp_conv;
+  }
 }

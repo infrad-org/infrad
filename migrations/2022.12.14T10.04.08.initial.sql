@@ -1,3 +1,4 @@
+-- up migration
 CREATE EXTENSION IF NOT EXISTS postgis;
 
 CREATE TABLE IF NOT EXISTS points (
@@ -15,7 +16,7 @@ CREATE TABLE IF NOT EXISTS whatsapp_conv_status (
   pending_location GEOMETRY(POINT, 4326),
   pending_description TEXT NOT NULL DEFAULT '',
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-)
+);
 
 CREATE OR REPLACE FUNCTION set_updated_at_timestamp()
 RETURNS TRIGGER AS $$
@@ -68,16 +69,8 @@ CREATE OR REPLACE FUNCTION update_whatsapp_conv(jsondata jsonb) RETURNS jsonb AS
 			new_conv_status.pending_location, new_conv_status.pending_description)
 			RETURNING to_json(points.*) INTO RESULT;
 		DELETE FROM whatsapp_conv_status WHERE phone_number_id = curr_phone_number_id;
-		RETURN RESULT;
+		RETURN json_build_object('status', 'point_created', 'value', RESULT);
 	END IF;
-  	RETURN to_json(new_conv_status);
+  	RETURN json_build_object('status', 'pending', 'value', to_json(new_conv_status));
   END
 $$ LANGUAGE plpgsql;
-
---DROP FUNCTION update_whatsapp_conv(jsonb);
- 
---SELECT update_whatsapp_conv('{"phone_number_id": "test", "location": { "type": "Point", "coordinates": [31.0, 10.0] }}'::jsonb);
---
---SELECT update_whatsapp_conv('{"phone_number_id": "test", "description": "test" }'::jsonb);
-
---DELETE FROM whatsapp_conv_status;

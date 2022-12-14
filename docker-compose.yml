@@ -8,5 +8,3 @@ services:
       POSTGRES_DB: infraddb
       POSTGRES_USER: louwers
       POSTGRES_PASSWORD: password
-    volumes:
-      - ./migrations:/docker-entrypoint-initdb.d

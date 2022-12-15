@@ -1,6 +1,6 @@
 import type { Client } from "pg";
 import { z } from "zod";
-import type { Point } from "geojson";
+import type { Point, BBox } from "geojson";
 import { pointSchema } from "./geojson.zod";
 
 export class ClientWrapper {
@@ -58,5 +58,23 @@ export class ClientWrapper {
       )
       .length(1);
     return schema.parse(rows)[0].update_whatsapp_conv;
+  }
+
+  async getPoints() {
+    // bbox: BBox
+    //  WHERE st_makeenvelope($1, $2, $3, $4) ~ location;
+    const { rows } = await this.client.query(
+      "SELECT json_agg(points) as points FROM points"
+      // bbox
+    );
+    return z
+      .array(
+        z.object({
+          hashid: z.string(),
+          location: pointSchema,
+          description: z.string(),
+        })
+      )
+      .parse(rows[0].points);
   }
 }

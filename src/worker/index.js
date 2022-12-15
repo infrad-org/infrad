@@ -36,7 +36,7 @@ export default {
       if (pathname.startsWith("/_telefunc")) {
         const body = await request.text();
         const { method } = request;
-        const response = await handleTelefunc({ url, method, body });
+        const response = await handleTelefunc({ url, method, body }, env);
         return response;
       }
 

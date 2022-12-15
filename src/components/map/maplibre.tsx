@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { usePageContext } from "../../renderer/usePageContext";
 import { MapStateManager } from "../../app/map-state/map-state";
 import { getMapLibreEffectHandlers } from "../../app/map-state/map-libre-effect-handlers";
+import { onGetAllPoints } from "../../app/map-state/map.telefunc";
 
 type Tweet = {
   lat: number;
@@ -10,7 +11,7 @@ type Tweet = {
   url: string;
 };
 
-function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
+function MapLibre() {
   const mapDiv = useRef<HTMLDivElement | null>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const { loc } = usePageContext();
@@ -30,31 +31,41 @@ function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
 
     map.current.dragRotate.disable();
 
-    const handleCreatePointButton = async (innerEvent: MouseEvent) => {
-      const target = innerEvent.target;
-      if (!(target instanceof Element)) return;
-      if (!target.matches(".createpointbutton")) return;
-      mapStateManager.send({
-        tag: "pointCreationConfirmed",
-      });
-    };
-    document.addEventListener("click", handleCreatePointButton);
+    (async () => {
+      const points = await onGetAllPoints();
+      for (const {location, description} of points) {
+        const popup = new maplibregl.Popup().setLngLat(location.coordinates).setText(description);
+        new maplibregl.Marker({
+          color: "#ff7f2a"
+        }).setLngLat(location.coordinates).setPopup(popup).addTo(map.current);
+      }
+    })();
 
-    map.current.on("click", (e) => {
-      mapStateManager.send({
-        tag: "latLngClicked",
-        lat: e.lngLat.lat,
-        lng: e.lngLat.lng,
-      });
-    });
+  //   const handleCreatePointButton = async (innerEvent: MouseEvent) => {
+  //     const target = innerEvent.target;
+  //     if (!(target instanceof Element)) return;
+  //     if (!target.matches(".createpointbutton")) return;
+  //     mapStateManager.send({
+  //       tag: "pointCreationConfirmed",
+  //     });
+  //   };
+  //   document.addEventListener("click", handleCreatePointButton);
 
-    map.current.on("click", (e) => {
-      console.log(e.lngLat);
-    });
+  //   map.current.on("click", (e) => {
+  //     mapStateManager.send({
+  //       tag: "latLngClicked",
+  //       lat: e.lngLat.lat,
+  //       lng: e.lngLat.lng,
+  //     });
+  //   });
 
-    // mapStateManager.updateEffectHandlers(
-    //   getMapLibreEffectHandlers({ map: map.current, mapStateManager })
-    // );
+  //   map.current.on("click", (e) => {
+  //     console.log(e.lngLat);
+  //   });
+
+  //   mapStateManager.updateEffectHandlers(
+  //     getMapLibreEffectHandlers({ map: map.current, mapStateManager })
+  //   );
   }, []);
 
   return <>
@@ -65,7 +76,8 @@ function MapLibre({ mapStateManager }: { mapStateManager: MapStateManager }) {
         top: "0",
         position: "absolute",
         width: "100vw",
-        height: mapStateManager.state.tag === 'pointOpen' ? "50vh" : "100vh",
+        height: "100vh"
+        // height: mapStateManager.state.tag === 'pointOpen' ? "50vh" : "100vh",
       }}
       ref={mapDiv}
     ></div>

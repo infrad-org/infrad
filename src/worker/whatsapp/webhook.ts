@@ -60,6 +60,7 @@ export async function handleWhatsAppWebhook(request: Request, env, ctx) {
   console.log(parsed.data);
 
   const db = new ClientWrapper(new Client(env.DATABASE_URL));
+  await db.client.connect();
 
   const entry = parsed.data.entry;
   for (const e of entry) {
@@ -103,6 +104,8 @@ export async function handleWhatsAppWebhook(request: Request, env, ctx) {
       }
     }
   }
+
+  await db.client.end();
 
   return new Response(null, { status: 200 });
 }

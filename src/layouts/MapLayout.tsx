@@ -81,7 +81,7 @@ export function MapLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <MapStateManagerProvider forceRerender={forceRerender}>
+      {/* <MapStateManagerProvider forceRerender={forceRerender}> */}
         <div className="absolute w-full flex flex-col">
           <MapLayoutHeader />
           {/* <div className="grow flex justify-center items-center">
@@ -92,7 +92,7 @@ export function MapLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <Map />
-      </MapStateManagerProvider>
+      {/* </MapStateManagerProvider> */}
     </>
   );
 }

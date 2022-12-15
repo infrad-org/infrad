@@ -6,7 +6,10 @@ import presetWind from "@unocss/preset-wind";
 import telefunc from "telefunc/vite";
 
 export default {
-  publicDir: 'src/public',
+  ssr: {
+    noExternal: ["@neondatabase/serverless"],
+  },
+  publicDir: "src/public",
   plugins: [
     Unocss({
       presets: [presetWind()],

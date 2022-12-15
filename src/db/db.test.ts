@@ -48,3 +48,10 @@ test("updateWhatsAppConversation()", async () => {
   assert(result3.value.description === description2);
   expect(result3.value.location).to.deep.equal(point);
 });
+
+test("getPoints", async () => {
+  const result = await w.getPoints([29, 29, 31, 31]);
+  console.log(result);
+
+  assert(result.length > 1);
+});

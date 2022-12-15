@@ -5,8 +5,11 @@ const { renderPage } = require("vite-plugin-ssr");
 const vite = require("vite");
 const fetch = require("node-fetch");
 const { telefunc, provideTelefuncContext } = require("telefunc");
+const { Client } = require("pg");
 
 startServer();
+
+const databaseUrl = process.env.DATABASE_URL;
 
 async function startServer() {
   const app = express();
@@ -19,9 +22,17 @@ async function startServer() {
   app.use(viteDevMiddleware);
 
   app.use(express.text()); // Parse & make HTTP request body available at `req.body`
+  console.log("databaseUrl", databaseUrl);
+  const db = { databaseUrl };
+
   app.all("/_telefunc", async (req, res) => {
     const { user } = req;
-    provideTelefuncContext({ user });
+    provideTelefuncContext({
+      user,
+      dbClient: new Client({
+        connectionString: databaseUrl,
+      }),
+    });
     const httpResponse = await telefunc({
       url: req.originalUrl,
       method: req.method,

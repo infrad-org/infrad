@@ -43,28 +43,29 @@ function useAllPoints(mapStateManager: MapStateManager) {
   useEffect(() => {
     (async () => {
       const points = await onGetAllPoints();
-      points.forEach(({ id, loc }) =>
+      points.forEach(({ location, hashid }) =>{
+        console.log('location', location)
         mapStateManager.doEffect({
           tag: "addMarker",
-          id,
-          lng: loc[0],
-          lat: loc[1],
-        })
+          id: hashid,
+          lng: location.coordinates[0],
+          lat: location.coordinates[1],
+        })}
       );
     })();
   }, []);
 }
 
 export function Map() {
-  const mapStateManager = useMapStateManager();
-  useAllPoints(mapStateManager);
+  // const mapStateManager = useMapStateManager();
+  // useAllPoints(mapStateManager);
 
   return (
     <>
-      <MapLibre mapStateManager={mapStateManager} />
-      {mapStateManager.state.tag === "pointOpen" && (
+      <MapLibre />
+      {/* {mapStateManager.state.tag === "pointOpen" && (
         <Modal state={mapStateManager.state} />
-      )}
+      )} */}
     </>
   );
 }

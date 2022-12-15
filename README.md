@@ -18,4 +18,3 @@ A [serverless](https://en.wikipedia.org/wiki/Serverless_computing) **backend** i
 - [Cyclestreets](https://www.cyclestreets.net/photomap/) (United Kingdom)
 - [Cyclescape](https://www.cyclescape.org/) (United Kingdom)
 - [DansMaRue](https://play.google.com/store/apps/details?id=fr.paris.android.signalement&hl=en&gl=US) (Paris, France)
-- [Widen My Path](https://www.widenmypath.com/suggest/)

@@ -1,4 +1,4 @@
-import react from "@vitejs/plugin-react";
+import vue from "@vitejs/plugin-vue";
 import ssr from "vite-plugin-ssr/plugin";
 import type { UserConfig } from "vite";
 import Unocss from "unocss/vite";
@@ -20,8 +20,8 @@ export default {
       },
       transformers: [],
     }),
-    react(),
     ssr(),
+    vue(),
     telefunc(),
   ],
   resolve: {
@@ -30,5 +30,5 @@ export default {
     preserveSymlinks: true,
   },
   // We manually add a list of dependencies to be pre-bundled, in order to avoid a page reload at dev start which breaks vite-plugin-ssr's CI
-  optimizeDeps: { include: ["react-streaming"] },
+  optimizeDeps: {},
 } as UserConfig;

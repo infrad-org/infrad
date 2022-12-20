@@ -12,9 +12,20 @@ The **frontend** is built with of React and [UnoCSS](https://github.com/unocss/u
 
 A [serverless](https://en.wikipedia.org/wiki/Serverless_computing) **backend** is used (meaning there are no specific servers that need to be managed). In particular, the main backend is deployed to [CloudFlare Workers](https://workers.cloudflare.com/), with [vite-plugin-ssr](https://vite-plugin-ssr.com/) handling SSR and [Telefunc](https://telefunc.com/) handling RPC calls. PostgreSQL is used as a database on [Neon](https://neon.tech/).
 
+## Developer Notes
+
+```sh
+docker-compose up -d   # run PostgreSQL in Docker container
+npm install
+npm run migrate-local  # migrate
+
+npm run dev
+```
+
 ## See Also
 
 - [Veilig Verkeer Nederland Participatiepunt](https://participatiepunt.vvn.nl/) (the Netherlands)
 - [Cyclestreets](https://www.cyclestreets.net/photomap/) (United Kingdom)
 - [Cyclescape](https://www.cyclescape.org/) (United Kingdom)
 - [DansMaRue](https://play.google.com/store/apps/details?id=fr.paris.android.signalement&hl=en&gl=US) (Paris, France)
+- [Widen My Path](https://www.widenmypath.com/suggest)

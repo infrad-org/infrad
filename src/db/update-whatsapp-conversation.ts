@@ -3,23 +3,22 @@ import { Client } from "pg";
 import { z } from "zod";
 import { pointSchema } from "./geojson.zod";
 
+export type WhatsAppConversationUpdate = {
+  phoneNumberId: string;
+  content:
+    | {
+        type: "description";
+        value: string;
+      }
+    | {
+        type: "location";
+        value: Point;
+      };
+};
+
 export const updateWhatsAppConversation =
   (client: Client) =>
-  async ({
-    phoneNumberId,
-    content,
-  }: {
-    phoneNumberId: string;
-    content:
-      | {
-          type: "description";
-          value: string;
-        }
-      | {
-          type: "location";
-          value: Point;
-        };
-  }) => {
+  async ({ phoneNumberId, content }: WhatsAppConversationUpdate) => {
     const { rows } = await client.query(
       "SELECT update_whatsapp_conv($1::jsonb)",
       [

@@ -33,6 +33,7 @@ onUpdated(() => {
 });
 
 const marker = new Marker({
+  color: '#ff7f2a'
 }).setLngLat(props.lngLat).addTo(map);
 
 marker.setPopup(popup);

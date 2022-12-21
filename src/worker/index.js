@@ -21,16 +21,19 @@ export default {
       const webCryptSession = await getWebCryptSession(request);
 
       if (!isAssetUrl(url)) {
-        const userAgent = request.headers.get("User-Agent") || "no-user-agent";
-        const response = await handleSsr(url, {
-          userAgent: userAgent,
-          cf: request.cf,
-          session: webCryptSession.username
-            ? {
-                username: webCryptSession.username,
-              }
-            : null,
-        });
+        // const userAgent = request.headers.get("User-Agent") || "no-user-agent";
+        const response = await handleSsr(
+          url
+          // {
+          // userAgent: userAgent,
+          // cf: request.cf,
+          // session: webCryptSession.username
+          //   ? {
+          //       username: webCryptSession.username,
+          //     }
+          //   : null,
+          // }
+        );
         if (response !== null) return response;
       }
 

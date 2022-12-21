@@ -1,11 +1,17 @@
 import { Umzug } from "umzug";
-import { Client } from "pg";
-import path = require("path");
-import fs = require("fs");
+import pg from "pg";
+import type { Client } from "pg";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
 const connectionString = process.env.DATABASE_URL;
 
 let client: Client;
+
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
 
 const getRawSqlClient = () => {
   // this implementation happens to use sequelize, but you may want to use a specialised sql client
@@ -66,15 +72,13 @@ export const migrator = new Umzug({
   },
 });
 
-if (require.main) {
-  (async () => {
-    client = new Client({
-      connectionString,
-    });
-    await client.connect();
-    await migrator.runAsCLI();
-    await client.end();
-  })();
-}
+(async () => {
+  client = new pg.Client({
+    connectionString,
+  });
+  await client.connect();
+  await migrator.runAsCLI();
+  await client.end();
+})();
 
 export type Migration = typeof migrator._types.migration;

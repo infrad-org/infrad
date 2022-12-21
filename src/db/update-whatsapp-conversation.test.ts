@@ -1,5 +1,5 @@
 import { Point } from "geojson";
-import { test, expect, assert, afterAll, beforeAll } from "vitest";
+import { test, expect, assert } from "vitest";
 import { getClient } from "./test";
 import { updateWhatsAppConversation as uwc } from "./update-whatsapp-conversation";
 

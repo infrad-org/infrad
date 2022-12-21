@@ -17,9 +17,15 @@ A [serverless](https://en.wikipedia.org/wiki/Serverless_computing) **backend** i
 ```sh
 docker-compose up -d   # run PostgreSQL in Docker container
 npm install
-npm run migrate-local  # migrate
+npm run migrate -- up  # migrate
 
-npm run dev
+npm run dev            # run dev server
+```
+
+### Creating a New Migration
+
+```
+npm run migrate -- create --name NAME
 ```
 
 ## See Also

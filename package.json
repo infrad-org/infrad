@@ -6,7 +6,7 @@
     "deploy-dev": "vite build && wrangler publish --env dev",
     "test": "vitest",
     "test-db": "DATABASE_URL=postgres://louwers:password@localhost/infraddb vitest --config vitest/db.config.ts",
-    "migrate-local": "DATABASE_URL=postgres://louwers:password@localhost/infraddb tsx migrate",
+    "migrate": "DATABASE_URL=postgres://louwers:password@localhost/infraddb tsx migrate",
     "migrate-neon": "DATABASE_URL=$(pass infrad/neon.tech-dbpassword | grep postgres) tsx migrate"
   },
   "dependencies": {

@@ -1,52 +1,78 @@
-import { z } from "zod";
 import { ClientWrapper } from "../../db/db";
 import { Client } from "@neondatabase/serverless";
+import { messageSchema, webHookSchema } from "./webhook.zod";
+import {
+  updateWhatsAppConversation,
+  WhatsAppConversationUpdate,
+} from "../../db/update-whatsapp-conversation";
+import { z } from "zod";
 
-const commonMessageSchema = {
-  from: z.string(),
-};
+export function messageToUpdate(
+  message: z.infer<typeof messageSchema>
+): WhatsAppConversationUpdate {
+  switch (message.type) {
+    case "location":
+      return {
+        phoneNumberId: message.from,
+        content: {
+          type: "location",
+          value: {
+            coordinates: [
+              message.location.longitude,
+              message.location.latitude,
+            ],
+            type: "Point",
+          },
+        },
+      };
 
-const locationMessageSchema = z
-  .object({
-    type: z.literal("location"),
-    location: z.object({
-      latitude: z.number(),
-      longitude: z.number(),
-    }),
-  })
-  .extend(commonMessageSchema);
+    case "text":
+      return {
+        phoneNumberId: message.from,
+        content: {
+          type: "description",
+          value: message.text.body,
+        },
+      };
+  }
+}
 
-const textMessageSchema = z
-  .object({
-    type: z.literal("text"),
-    text: z.object({
-      body: z.string(),
-    }),
-  })
-  .extend(commonMessageSchema);
+export async function handleWebhookMessage(
+  data: z.infer<typeof webHookSchema>,
+  client: Client
+) {
+  const entry = data.entry;
+  const updates: WhatsAppConversationUpdate[] = [];
 
-export const messageSchema = z.union([
-  locationMessageSchema,
-  textMessageSchema,
-]);
-
-export const webHookSchema = z.object({
-  entry: z.array(
-    z.object({
-      id: z.string(),
-      changes: z.array(
-        z.object({
-          value: z.object({
-            metadata: z.object({
-              phone_number_id: z.string(),
-            }),
-            messages: z.array(z.unknown()),
-          }),
-        })
-      ),
-    })
-  ),
-});
+  // for (const e of entry) {
+  //   for (const change of e.changes) {
+  //     if (!change.value.messages) break;
+  //     for (const m of change.value.messages) {
+  //       const parsedMessage = messageSchema.safeParse(m);
+  //       if (!parsedMessage.success) {
+  //         console.warn("Failed to parse message", {
+  //           message: m,
+  //           error: parsedMessage.error,
+  //         });
+  //         break;
+  //       } // ignoring message
+  //       const update = messageToUpdate(parsedMessage.data);
+  //       updates.push(update);
+  //     }
+  //   }
+  // }
+  const saveMessage = client.query(
+    `
+    INSERT INTO whatsapp_webhook_messages (data) VALUES ($1) 
+  `,
+    [data]
+  );
+  await saveMessage;
+  // await Promise.all([
+  //   ...updates.map(updateWhatsAppConversation(client)),
+  //   saveMessage,
+  // ]);
+}
 
 export async function handleWhatsAppWebhook(request: Request, env, ctx) {
   const data = await request.json();
@@ -57,55 +83,13 @@ export async function handleWhatsAppWebhook(request: Request, env, ctx) {
     console.warn("ZodError: ", parsed.error);
     return new Response(null, { status: 200 });
   }
-  console.log(parsed.data);
 
-  const db = new ClientWrapper(new Client(env.DATABASE_URL));
-  await db.client.connect();
+  const client = new Client(env.DATABASE_URL);
+  await client.connect();
 
-  const entry = parsed.data.entry;
-  for (const e of entry) {
-    for (const c of e.changes) {
-      if (!c.value.messages) break;
-      for (const m of c.value.messages) {
-        const parsedMessage = messageSchema.safeParse(m);
-        if (!parsedMessage.success) {
-          console.warn("Failed to parse message", {
-            message: m,
-            error: parsedMessage.error,
-          });
-          break;
-        } // ignoring message
-        if (parsedMessage.data.type === "location") {
-          console.log("updaing conversation");
-          await db.updateWhatsAppConversation({
-            phoneNumberId: parsedMessage.data.from,
-            content: {
-              type: "location",
-              value: {
-                coordinates: [
-                  parsedMessage.data.location.longitude,
-                  parsedMessage.data.location.latitude,
-                ],
-                type: "Point",
-              },
-            },
-          });
-          break;
-        }
+  await handleWebhookMessage(parsed.data, client);
 
-        console.log("saving description");
-        await db.updateWhatsAppConversation({
-          phoneNumberId: parsedMessage.data.from,
-          content: {
-            type: "description",
-            value: parsedMessage.data.text.body,
-          },
-        });
-      }
-    }
-  }
-
-  await db.client.end();
+  await client.end();
 
   return new Response(null, { status: 200 });
 }

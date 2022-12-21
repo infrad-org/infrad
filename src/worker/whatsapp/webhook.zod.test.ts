@@ -1,7 +1,7 @@
-import { messageSchema, webHookSchema } from "./webhook";
+import { messageSchema, webHookSchema } from "./webhook.zod";
 import { expect, test } from "vitest";
 
-const webhookMessage = {
+const webhookMessage = () => ({
   object: "whatsapp_business_account",
   entry: [
     {
@@ -39,14 +39,14 @@ const webhookMessage = {
       ],
     },
   ],
-};
+});
 
 test("webHookSchema", () => {
-  const result = webHookSchema.parse(webhookMessage);
+  const result = webHookSchema.parse(webhookMessage());
   expect(result.entry[0].changes[0].value.messages).to.have.length(1);
 });
 
-const locationMessage = {
+const locationMessage = () => ({
   from: "123",
   id: "wamid.HBgNNDkxNzY1OTk0MTI0NxUCABIYIEI1OTYyNDEzNzQyNjNCM0I5REU4ODJFMEQxMkJCNURBAA==",
   timestamp: "1670970428",
@@ -55,8 +55,8 @@ const locationMessage = {
     longitude: 8.333333,
   },
   type: "location",
-};
+});
 
 test("messageSchema", () => {
-  messageSchema.parse(locationMessage);
+  messageSchema.parse(locationMessage());
 });

@@ -8,6 +8,7 @@ import { handleWhatsAppWebhook } from "./whatsapp/webhook";
 function handleError(request, env, err) {
   const sentry = initSentry(request, env);
   sentry.captureException(err);
+  console.error(err);
   return new Response("Internal Error", { status: 500 });
 }
 

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "es2017",
     "esModuleInterop": true,
     "strict": true,
     "jsx": "react",
@@ -7,6 +8,8 @@
     "lib": ["ES2020", "DOM"],
     "types": ["@cloudflare/workers-types", "react"],
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "node"
   }
 }

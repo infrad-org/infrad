@@ -1,11 +1,19 @@
 // We use a Express.js server for development
 
-const express = require("express");
-const { renderPage } = require("vite-plugin-ssr");
-const vite = require("vite");
-const fetch = require("node-fetch");
-const { telefunc, provideTelefuncContext } = require("telefunc");
-const { Client } = require("pg");
+// const express = require("express");
+// const { renderPage } = require("vite-plugin-ssr");
+// const vite = require("vite");
+// const fetch = require("node-fetch");
+// const { telefunc, provideTelefuncContext } = require("telefunc");
+// const { Client } = require("pg");
+
+import express from "express";
+import { renderPage } from "vite-plugin-ssr";
+import * as vite from "vite";
+import fetch from "node-fetch";
+import { telefunc, provideTelefuncContext } from "telefunc";
+import pg from "pg";
+const { Client } = pg;
 
 startServer();
 
@@ -25,19 +33,21 @@ async function startServer() {
   console.log("databaseUrl", databaseUrl);
   const db = { databaseUrl };
 
+  console.log({ databaseUrl });
   app.all("/_telefunc", async (req, res) => {
-    const { user } = req;
-    provideTelefuncContext({
-      user,
-      dbClient: new Client({
-        connectionString: databaseUrl,
-      }),
+    const dbClient = new Client({
+      connectionString: databaseUrl,
     });
+    await dbClient.connect();
     const httpResponse = await telefunc({
       url: req.originalUrl,
       method: req.method,
       body: req.body,
+      context: {
+        dbClient,
+      },
     });
+    await dbClient.end();
     const { body, statusCode, contentType } = httpResponse;
     res.status(statusCode).type(contentType).send(body);
   });

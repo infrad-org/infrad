@@ -19,9 +19,10 @@ port = 3000
 name = "infrad-worker-dev"
 vars = { ENVIRONMENT = "dev" }
 routes = [
-	{ pattern = "dev.infrad.app", custom_domain = true, zone_name = "infrad.app" },
+	# { pattern = "dev.infrad.app", custom_domain = true, zone_name = "infrad.app" },
 
-	{ pattern = "demo.infrad.app", custom_domain = true, zone_name = "infrad.app" },
+	# { pattern = "demo.infrad.app", custom_domain = true, zone_name = "infrad.app" },
+	{ pattern = "dev.infrad.nl", custom_domain = true, zone_name = "infrad.nl" },
 ]
 # The necessary secrets are:
 # - SUPABASE_API_KEY

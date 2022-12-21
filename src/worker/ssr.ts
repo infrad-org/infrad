@@ -1,5 +1,5 @@
 import { renderPage } from "vite-plugin-ssr";
-import { PageContext } from "../renderer/PageContext";
+// import { PageContext } from "../renderer/PageContext";
 import { Session } from "./auth";
 
 function getLoc(cf?: IncomingRequestCfProperties) {
@@ -11,35 +11,50 @@ function getLoc(cf?: IncomingRequestCfProperties) {
     : undefined;
 }
 
-export async function handleSsr(
-  url: string,
-  {
-    userAgent,
-    cf,
-    session,
-  }: {
-    userAgent: string;
-    cf?: IncomingRequestCfProperties;
-    session: Session | null;
-  }
-) {
-  const pageContextInit: Omit<PageContext, "Page" | "exports" | "pageProps"> = {
+// export async function handleSsr(
+//   url: string,
+//   {
+//     userAgent,
+//     cf,
+//     session,
+//   }: {
+//     userAgent: string;
+//     cf?: IncomingRequestCfProperties;
+//     session: Session | null;
+//   }
+// ) {
+//   const pageContextInit: Omit<PageContext, "Page" | "exports" | "pageProps"> = {
+//     urlOriginal: url,
+//     fetch,
+//     userAgent,
+//     loc: getLoc(cf),
+//     session,
+//   };
+//   const pageContext = await renderPage(pageContextInit);
+//   const { httpResponse } = pageContext;
+//   if (!httpResponse) {
+//     return null;
+//   } else {
+//     const { statusCode, contentType } = httpResponse;
+//     const stream = httpResponse.getReadableWebStream();
+//     return new Response(stream, {
+//       headers: { "content-type": contentType },
+//       status: statusCode,
+//     });
+//   }
+// }
+
+export async function handleSsr(url: string) {
+  const pageContextInit = {
     urlOriginal: url,
-    fetch,
-    userAgent,
-    loc: getLoc(cf),
-    session,
   };
   const pageContext = await renderPage(pageContextInit);
   const { httpResponse } = pageContext;
   if (!httpResponse) {
     return null;
   } else {
-    const { statusCode, contentType } = httpResponse;
-    const stream = httpResponse.getReadableWebStream();
-    return new Response(stream, {
-      headers: { "content-type": contentType },
-      status: statusCode,
-    });
+    const { readable, writable } = new TransformStream();
+    httpResponse.pipe(writable);
+    return new Response(readable);
   }
 }

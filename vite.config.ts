@@ -3,7 +3,8 @@ import ssr from "vite-plugin-ssr/plugin";
 import type { UserConfig } from "vite";
 import Unocss from "unocss/vite";
 import presetWind from "@unocss/preset-wind";
-import telefunc from "telefunc/vite";
+import { telefunc } from "telefunc/vite";
+import markdown from "vite-plugin-md";
 
 export default {
   ssr: {
@@ -21,7 +22,10 @@ export default {
       transformers: [],
     }),
     ssr(),
-    vue(),
+    vue({
+      include: [/\.vue$/, /\.md$/],
+    }),
+    markdown(),
     telefunc(),
   ],
   resolve: {

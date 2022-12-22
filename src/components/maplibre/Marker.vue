@@ -33,7 +33,8 @@ onUpdated(() => {
 });
 
 const marker = new Marker({
-  color: '#ff7f2a'
+  color: '#ff7f2a',
+  scale: window.devicePixelRatio > 1 ? 1.5 : 1
 }).setLngLat(props.lngLat).addTo(map);
 
 marker.setPopup(popup);

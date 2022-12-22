@@ -8,7 +8,7 @@
     <Uitleg />
   </div>
   <Strip />
-  <Kaart />
+  <Kaart class="my-20" />
 </template>
 
 <script setup lang="ts">

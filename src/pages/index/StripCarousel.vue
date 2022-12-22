@@ -1,6 +1,6 @@
 <template>
   <div class="w-full flex flex-row justify-center max-h-screen">
-    <img :src="imgSrc[activeSlide]" class="max-w-xl">
+    <img :src="imgSrc[activeSlide]" class="max-w-xl object-scale-down">
   </div>
 </template>
 

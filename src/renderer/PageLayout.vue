@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import '@unocss/reset/antfu.css';
+import '@unocss/reset/tailwind.css';
 import 'uno.css';
 
 import Header from './layout/Header.vue';

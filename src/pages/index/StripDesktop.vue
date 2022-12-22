@@ -1,5 +1,5 @@
 <template>
-  <div class="max-h-150 flex flex-row max-w-screen gap-5 px-5">
+  <div class="flex flex-row max-w-screen gap-5 px-5">
     <div>
       <img src="/Infradstrip1.png" alt="Meisje op fiets vlakbij auto." class="max-w-full">
     </div>

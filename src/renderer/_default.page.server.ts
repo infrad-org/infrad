@@ -26,6 +26,9 @@ async function render(pageContext: any) {
 
   const documentHtml = escapeInject`<!DOCTYPE html>
     <html>
+      <head>
+        <title>Infrad</title>
+      </head>
       <body>
         <div id="app">${pipe}</div>
       </body>

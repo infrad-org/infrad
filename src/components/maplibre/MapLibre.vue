@@ -16,7 +16,11 @@ const mapDiv: Ref<HTMLElement | null> = ref(null);
 const loaded = ref(false);
 const { setMap } = provideMap({ loaded });
 
-console.log("one maplibre coming up")
+const props = withDefaults(defineProps<{
+  interactive?: boolean
+}>(), {
+  interactive: true
+});
 
 onMounted(() => {
   if (!mapDiv.value) throw new Error("mapDiv is null");
@@ -24,6 +28,7 @@ onMounted(() => {
   if (!style) throw new Error("style is null");
 
   var map = new maplibregl.Map({
+    interactive: props.interactive,
     attributionControl: true,
     container: mapDiv.value,
     style: style || 'https://demotiles.maplibre.org/style.json', // stylesheet location

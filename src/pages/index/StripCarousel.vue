@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex flex-row justify-center">
+  <div class="w-full flex flex-row justify-center max-h-screen">
     <img :src="imgSrc[activeSlide]" class="max-w-xl">
   </div>
 </template>

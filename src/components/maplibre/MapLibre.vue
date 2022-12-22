@@ -1,8 +1,9 @@
 <template>
-  <div ref="mapDiv" style='width: 100vh; height: 50vh;'></div>
-  <template v-if="loaded">
-    <slot />
-  </template>
+  <div ref="mapDiv">
+    <template v-if="loaded">
+      <slot />
+    </template>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -15,6 +16,8 @@ const mapDiv: Ref<HTMLElement | null> = ref(null);
 const loaded = ref(false);
 const { setMap } = provideMap({ loaded });
 
+console.log("one maplibre coming up")
+
 onMounted(() => {
   if (!mapDiv.value) throw new Error("mapDiv is null");
   const style = import.meta.env.VITE_MAPLIBRE_STYLE_URL;
@@ -24,8 +27,8 @@ onMounted(() => {
     attributionControl: true,
     container: mapDiv.value,
     style: style || 'https://demotiles.maplibre.org/style.json', // stylesheet location
-    center: [-74.5, 40], // starting position [lng, lat]
-    zoom: 9 // starting zoom
+    center: [6.093763624871777, 52.512570496985035], // starting position [lng, lat]
+    zoom: 12 // starting zoom
   });
   setMap(map);
   loaded.value = true;

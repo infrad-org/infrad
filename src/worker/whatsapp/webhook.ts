@@ -44,23 +44,23 @@ export async function handleWebhookMessage(
   const entry = data.entry;
   const updates: WhatsAppConversationUpdate[] = [];
 
-  // for (const e of entry) {
-  //   for (const change of e.changes) {
-  //     if (!change.value.messages) break;
-  //     for (const m of change.value.messages) {
-  //       const parsedMessage = messageSchema.safeParse(m);
-  //       if (!parsedMessage.success) {
-  //         console.warn("Failed to parse message", {
-  //           message: m,
-  //           error: parsedMessage.error,
-  //         });
-  //         break;
-  //       } // ignoring message
-  //       const update = messageToUpdate(parsedMessage.data);
-  //       updates.push(update);
-  //     }
-  //   }
-  // }
+  for (const e of entry) {
+    for (const change of e.changes) {
+      if (!change.value.messages) break;
+      for (const m of change.value.messages) {
+        const parsedMessage = messageSchema.safeParse(m);
+        if (!parsedMessage.success) {
+          console.warn("Failed to parse message", {
+            message: m,
+            error: parsedMessage.error,
+          });
+          break;
+        } // ignoring message
+        const update = messageToUpdate(parsedMessage.data);
+        updates.push(update);
+      }
+    }
+  }
   const saveMessage = client.query(
     `
     INSERT INTO whatsapp_webhook_messages (data) VALUES ($1) 
@@ -68,10 +68,10 @@ export async function handleWebhookMessage(
     [data]
   );
   await saveMessage;
-  // await Promise.all([
-  //   ...updates.map(updateWhatsAppConversation(client)),
-  //   saveMessage,
-  // ]);
+  await Promise.all([
+    ...updates.map(updateWhatsAppConversation(client)),
+    saveMessage,
+  ]);
 }
 
 export async function handleWhatsAppWebhook(request: Request, env, ctx) {

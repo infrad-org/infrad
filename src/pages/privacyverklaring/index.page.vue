@@ -1,5 +1,8 @@
 <template>
-  <PrivacyVerklaring />
+  <div class="mx-10 pb-10 md">
+    <PrivacyVerklaring />
+
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -4,15 +4,17 @@ Infrad, gevestigd aan onderstaand adres, is verantwoordelijk voor de verwerking 
 
 ## Contactgegevens:
 
-https://infrad.nl
-
-Bart Louwers
-Uhlandstr. 26
-59555 Lippstadt
-Duitsland
+<address>
+Bart Louwers <br>
+Uhlandstr. 26 <br>
+59555 Lippstadt <br>
+Duitsland <br>
 +4917659941247
 
-Bart Louwers is de Functionaris Gegevensbescherming van Infrad. Hij is te bereiken via bart@infrad.app
+https://infrad.nl
+</address>
+
+Bart Louwers is de Functionaris Gegevensbescherming van Infrad. Hij is te bereiken via bart@infrad.app.
 
 ## Persoonsgegevens die wij verwerken
 

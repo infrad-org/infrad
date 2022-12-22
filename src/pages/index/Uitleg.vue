@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-#7a2601 text-#f8aa84 p-5">
+  <section id="uitleg" class="bg-#7a2601 text-#f8aa84 p-5">
     <h1 class="text-3xl font-bold mx-auto">~ Uitleg ~</h1>
     <p class="pt-5">Met Infrad kan je makkelijk jouw ideeën voor de publieke ruimte delen. Leuk dat je meedoet! De
       stappen zijn als
@@ -14,7 +14,7 @@
     <p class="py-5">🎉 Dat was het! Je idee wordt automatisch toegevoegd aan de kaart. Heb je vragen? Stuur een e-mail
       naar
       team@infrad.app.</p>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">

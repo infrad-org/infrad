@@ -16,7 +16,9 @@ const props = defineProps<{
 const map = useMap();
 const popupRef: Ref<HTMLElement | null> = ref(null);
 
-const popup = new Popup().setHTML('');
+const popup = new Popup({
+  maxWidth: "50vw"
+}).setHTML('');
 
 function updatePopupHTML() {
   const html = popupRef.value?.innerHTML;

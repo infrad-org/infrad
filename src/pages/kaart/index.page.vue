@@ -3,7 +3,7 @@
     <MapLibre class="h-full">
       <template v-for="point in points">
         <Marker :lng-lat="point.location.coordinates">
-          {{ point.description }}
+          <span class="lg:text-lg text-4xl">{{ point.description }}</span>
         </Marker>
       </template>
     </MapLibre>
